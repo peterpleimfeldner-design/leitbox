@@ -66,6 +66,8 @@ if ($action === 'delete' && $cardid && confirm_sesskey()) {
 
 if ($action === 'bulkdelete' && data_submitted() && confirm_sesskey()) {
     $cardids = optional_param_array('cardids', [], PARAM_INT);
+    $deleted_count = 0;
+    
     if (!empty($cardids)) {
         list($in, $params) = $DB->get_in_or_equal($cardids);
         
@@ -74,12 +76,18 @@ if ($action === 'bulkdelete' && data_submitted() && confirm_sesskey()) {
         $valid_cards = $DB->get_fieldset_sql("SELECT id FROM {recall_cards} WHERE id $in AND recallid = ?", $params);
         
         if (!empty($valid_cards)) {
+            $deleted_count = count($valid_cards);
             list($in_valid, $params_valid) = $DB->get_in_or_equal($valid_cards);
             $DB->delete_records_select('recall_progress', "cardid $in_valid", $params_valid);
             $DB->delete_records_select('recall_cards', "id $in_valid", $params_valid);
         }
     }
-    redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]), get_string('cardsdeleted', 'mod_recall', count($valid_cards)));
+    
+    if ($deleted_count > 0) {
+        redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]), get_string('cardsdeleted', 'mod_recall', $deleted_count));
+    } else {
+        redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]));
+    }
 }
 
 if ($action === 'export' && confirm_sesskey()) {
