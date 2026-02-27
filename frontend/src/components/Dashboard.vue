@@ -83,31 +83,35 @@
     <Teleport to="body">
       <Transition name="rc-fade">
         <div v-if="showInfo" class="rc-overlay" @click.self="showInfo = false" role="dialog" aria-modal="true" :aria-label="getString('systemtitle')">
-          <div class="rc-modal">
+          <div class="rc-modal rc-modal-flex">
             <button @click="showInfo = false" class="rc-modal-close" :aria-label="'Schließen'">×</button>
-            <div class="rc-modal-head">
+            <div class="rc-modal-head rc-modal-px rc-modal-pt" style="margin-bottom: 14px;">
               <span aria-hidden="true">🎓</span>
-              <h2>{{ getString('systemtitle') }}</h2>
+              <h2 style="margin: 0;">{{ getString('systemtitle') }}</h2>
             </div>
-            <p class="rc-modal-intro" v-html="getString('systemintro')"></p>
-            <div class="rc-modal-rules">
-              <div class="rc-rule">
-                <span class="rc-rule-dot rc-rule-dot--green" aria-hidden="true">✓</span>
-                <div><strong>{{ getString('known_btn') }}</strong><p v-html="getString('known_desc')"></p></div>
+            <div class="rc-modal-scroll rc-modal-px">
+              <p class="rc-modal-intro" v-html="getString('systemintro')"></p>
+              <div class="rc-modal-rules">
+                <div class="rc-rule">
+                  <span class="rc-rule-dot rc-rule-dot--green" aria-hidden="true">✓</span>
+                  <div><strong>{{ getString('known_btn') }}</strong><p v-html="getString('known_desc')"></p></div>
+                </div>
+                <div class="rc-rule">
+                  <span class="rc-rule-dot rc-rule-dot--yellow" aria-hidden="true">↺</span>
+                  <div><strong>{{ getString('again_btn') }}</strong><p v-html="getString('again_desc')"></p></div>
+                </div>
+                <div class="rc-rule">
+                  <span class="rc-rule-dot rc-rule-dot--red" aria-hidden="true">↓</span>
+                  <div><strong>{{ getString('hard_btn') }}</strong><p v-html="getString('hard_desc')"></p></div>
+                </div>
               </div>
-              <div class="rc-rule">
-                <span class="rc-rule-dot rc-rule-dot--yellow" aria-hidden="true">↺</span>
-                <div><strong>{{ getString('again_btn') }}</strong><p v-html="getString('again_desc')"></p></div>
-              </div>
-              <div class="rc-rule">
-                <span class="rc-rule-dot rc-rule-dot--red" aria-hidden="true">↓</span>
-                <div><strong>{{ getString('hard_btn') }}</strong><p v-html="getString('hard_desc')"></p></div>
-              </div>
+              <div class="rc-modal-tip" v-html="getString('systemtip')"></div>
             </div>
-            <div class="rc-modal-tip" v-html="getString('systemtip')"></div>
-            <button @click="showInfo = false" class="rc-btn rc-btn--primary rc-btn--full">
-              {{ getString('gotit') }}
-            </button>
+            <div class="rc-modal-footer rc-modal-px rc-modal-pb" style="padding-top: 14px;">
+              <button @click="showInfo = false" class="rc-btn rc-btn--primary rc-btn--full">
+                {{ getString('gotit') }}
+              </button>
+            </div>
           </div>
         </div>
       </Transition>
@@ -117,27 +121,29 @@
     <Teleport to="body">
       <Transition name="rc-fade">
         <div v-if="showReset" class="rc-overlay" @click.self="showReset = false" role="alertdialog" aria-modal="true" :aria-label="getString('reset_progress_confirm_title')">
-          <div class="rc-modal rc-modal--warning">
+          <div class="rc-modal rc-modal-flex rc-modal--warning">
             <button @click="showReset = false" class="rc-modal-close" :aria-label="'Abbrechen'">×</button>
-            <div class="rc-modal-head">
-              <span aria-hidden="true">⚠️</span>
-              <h2>{{ getString('reset_progress_confirm_title') }}</h2>
-            </div>
-            <p class="rc-modal-warning-text" v-html="getString('reset_progress_confirm_msg')"></p>
-            <div v-if="resetError" class="rc-alert rc-alert--error" role="alert">
-              ❌ {{ resetError }}
-            </div>
-            <div class="rc-modal-actions">
-              <button @click="showReset = false" class="rc-btn rc-btn--ghost">
-                {{ getString('reset_progress_cancel') }}
-              </button>
-              <button @click="doReset" class="rc-btn rc-btn--danger" :disabled="resetting">
-                <svg v-if="resetting" aria-hidden="true" class="rc-spin rc-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                </svg>
-                {{ getString('reset_progress_btn') }}
-              </button>
+            <div class="rc-modal-scroll rc-modal-px rc-modal-pt rc-modal-pb">
+              <div class="rc-modal-head" style="margin-bottom: 14px;">
+                <span aria-hidden="true">⚠️</span>
+                <h2 style="margin: 0;">{{ getString('reset_progress_confirm_title') }}</h2>
+              </div>
+              <p class="rc-modal-warning-text" v-html="getString('reset_progress_confirm_msg')"></p>
+              <div v-if="resetError" class="rc-alert rc-alert--error" role="alert">
+                ❌ {{ resetError }}
+              </div>
+              <div class="rc-modal-actions">
+                <button @click="showReset = false" class="rc-btn rc-btn--ghost">
+                  {{ getString('reset_progress_cancel') }}
+                </button>
+                <button @click="doReset" class="rc-btn rc-btn--danger" :disabled="resetting">
+                  <svg v-if="resetting" aria-hidden="true" class="rc-spin rc-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  {{ getString('reset_progress_btn') }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -524,22 +530,36 @@ const doReset = async () => {
   background: #fff;
   border-radius: 24px;
   max-width: 540px; width: 100%;
-  padding: 32px 30px;
   box-shadow: 0 24px 64px rgba(29,39,87,0.22);
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 90vh; /* standard modals */
 }
+.rc-modal-flex {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  overflow: hidden !important; 
+}
+.rc-modal-scroll {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  overscroll-behavior: contain;
+}
+.rc-modal-px { padding-left: 30px; padding-right: 30px; }
+.rc-modal-pt { padding-top: 32px; flex-shrink: 0; }
+.rc-modal-pb { padding-bottom: 32px; flex-shrink: 0; }
+
 .rc-modal--warning { border-top: 5px solid #dc2626; }
 .rc-modal-close {
   position: absolute; top: 14px; right: 14px;
   background: #f1f5f9; border: none; border-radius: 50%;
   width: 32px; height: 32px; font-size: 1.3rem; line-height: 1;
   cursor: pointer; color: #64748b;
+  z-index: 10;
 }
 .rc-modal-close:hover { background: #e2e8f0; }
 .rc-modal-close:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .rc-modal-head {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 12px;
 }
 .rc-modal-head span { font-size: 1.8rem; }
 .rc-modal-head h2 { font-size: 1.25rem; font-weight: 800; color: var(--navy); margin: 0; }

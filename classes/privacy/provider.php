@@ -120,7 +120,7 @@ class provider implements metadata_provider, plugin_provider, core_userlist_prov
                             'box_number' => $rec->box_number,
                             'count_correct' => $rec->count_correct,
                             'count_wrong' => $rec->count_wrong,
-                            'last_reviewed' => \core_date::userdate($rec->last_reviewed)
+                            'last_reviewed' => date('Y-m-d H:i:s', $rec->last_reviewed)
                         ];
                     }
                     
