@@ -47,7 +47,7 @@ function mod_recall_auto_delete_demos($recallid) {
     $cards = $DB->get_records('recall_cards', ['recallid' => $recallid], 'id ASC');
     if (count($cards) === 5) {
         $first_card = reset($cards);
-        if (strpos($first_card->question, 'Recall! 🎉') !== false) {
+        if (strpos($first_card->question, 'Willkommen bei Recall') !== false || strpos($first_card->question, 'Welcome to Recall') !== false) {
             list($in, $params) = $DB->get_in_or_equal(array_keys($cards));
             if (!empty($params)) {
                  $DB->delete_records_select('recall_progress', "cardid $in", $params);
@@ -208,9 +208,10 @@ $cards = $DB->get_records('recall_cards', ['recallid' => $recall->id], 'id ASC')
 
 if ($cards) {
     $table = new html_table();
-    $table->head = ['ID', get_string('question', 'mod_recall'), get_string('answer', 'mod_recall'), get_string('hint', 'mod_recall'), get_string('actions')];
+    $table->head = ['#', get_string('question', 'mod_recall'), get_string('answer', 'mod_recall'), get_string('hint', 'mod_recall'), get_string('actions')];
     $table->attributes['class'] = 'generaltable w-100';
 
+    $rownum = 1;
     foreach ($cards as $c) {
         $editurl = new moodle_url('/mod/recall/manage.php', ['id' => $cm->id, 'action' => 'edit', 'cardid' => $c->id]);
         $editbtn = html_writer::link($editurl, $OUTPUT->pix_icon('t/edit', get_string('edit')), ['class' => 'mr-2', 'style' => 'margin-right:8px;']);
@@ -219,7 +220,7 @@ if ($cards) {
         $delbtn = html_writer::link($delurl, $OUTPUT->pix_icon('t/delete', get_string('delete')), ['onclick' => 'return confirm("'.get_string('confirmdeletecard', 'mod_recall').'")']);
         
         $table->data[] = [
-            $c->id,
+            $rownum++,
             format_text($c->question),
             format_text($c->answer),
             format_text($c->hint),
