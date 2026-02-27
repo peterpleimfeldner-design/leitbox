@@ -204,14 +204,21 @@ echo $OUTPUT->box_end();
 
 // 4. Existing Cards List
 echo html_writer::tag('h3', get_string('existingcards', 'mod_recall'), ['class' => 'mt-5']);
-$cards = $DB->get_records('recall_cards', ['recallid' => $recall->id], 'id ASC');
+
+$page = optional_param('page', 0, PARAM_INT);
+$perpage = 50;
+
+$totalcards = $DB->count_records('recall_cards', ['recallid' => $recall->id]);
+$cards = $DB->get_records('recall_cards', ['recallid' => $recall->id], 'id ASC', '*', $page * $perpage, $perpage);
 
 if ($cards) {
+    echo $OUTPUT->paging_bar($totalcards, $page, $perpage, new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]));
+    
     $table = new html_table();
     $table->head = ['#', get_string('question', 'mod_recall'), get_string('answer', 'mod_recall'), get_string('hint', 'mod_recall'), get_string('actions')];
     $table->attributes['class'] = 'generaltable w-100';
 
-    $rownum = 1;
+    $rownum = ($page * $perpage) + 1;
     foreach ($cards as $c) {
         $editurl = new moodle_url('/mod/recall/manage.php', ['id' => $cm->id, 'action' => 'edit', 'cardid' => $c->id]);
         $editbtn = html_writer::link($editurl, $OUTPUT->pix_icon('t/edit', get_string('edit')), ['class' => 'mr-2', 'style' => 'margin-right:8px;']);
@@ -228,6 +235,9 @@ if ($cards) {
         ];
     }
     echo html_writer::table($table);
+    
+    // Bottom paging bar for convenience
+    echo $OUTPUT->paging_bar($totalcards, $page, $perpage, new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]));
 } else {
     echo html_writer::tag('p', get_string('nocards', 'mod_recall'));
 }
