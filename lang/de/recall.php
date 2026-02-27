@@ -98,7 +98,13 @@ $string['bulkimport'] = 'Massen-Import (KI / Text)';
 $string['bulkimportdesc'] = 'Füge einen formatierten Textblock ein, um mehrere Karten auf einmal zu importieren.';
 $string['exportcards'] = 'Karten exportieren (.txt)';
 $string['prompt_instruction'] = 'Kopiere diesen Prompt und nutze ihn mit einer beliebigen KI, um aus deinen Scripten Karten zu generieren:';
-$string['prompt_template'] = 'Erstelle aus folgendem Text Karteikarten zum Lernen. 
+$string['prompt_type_selection'] = 'Wähle eine Lern-Methode / einen Fragetyp aus:';
+$string['prompt_type_standard'] = 'Standard (Frage & Antwort)';
+$string['prompt_type_tf'] = 'Wahr oder Falsch';
+$string['prompt_type_vocab'] = 'Vokabeln / Fachbegriffe';
+$string['prompt_type_cloze'] = 'Lückentext';
+
+$string['prompt_template_standard'] = 'Erstelle aus folgendem Text Karteikarten zum Lernen. 
 Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown (keine Sternchen, keine Rauten) und trenne alle Karten mit ===CARD===. 
 Schreibe keine Einleitung, nur den reinen Text-Code.
 
@@ -111,6 +117,54 @@ H: Stadt der Liebe
 ===CARD===
 Q: Wer hat die Relativitätstheorie formuliert?
 A: Albert Einstein
+
+Hier ist der Text, aus dem du die Karten erstellen sollst:';
+
+$string['prompt_template_tf'] = 'Erstelle aus folgendem Text Wahr/Falsch-Karteikarten zum Lernen. 
+Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown und trenne alle Karten mit ===CARD===. 
+Schreibe keine Einleitung, nur den reinen Text-Code.
+
+Beispiel für das gewünschte Ausgabeformat:
+===CARD===
+Q: Wahr oder Falsch: Paris ist die Hauptstadt von Spanien.
+A: Falsch. Paris ist die Hauptstadt von Frankreich.
+H: Denke an den Eiffelturm.
+
+===CARD===
+Q: Wahr oder Falsch: Die Erde ist flach.
+A: Falsch.
+
+Hier ist der Text, aus dem du die Karten erstellen sollst:';
+
+$string['prompt_template_vocab'] = 'Extrahiere aus folgendem Text die wichtigsten Vokabeln oder Fachbegriffe und erstelle daraus Karteikarten zum Lernen. 
+Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown und trenne alle Karten mit ===CARD===. 
+Schreibe keine Einleitung, nur den reinen Text-Code.
+
+Beispiel für das gewünschte Ausgabeformat:
+===CARD===
+Q: Das Haus (Englisch)
+A: The house
+H: Gebäude zum Wohnen
+
+===CARD===
+Q: Mitose
+A: Zellkernteilung (Biologie)
+
+Hier ist der Text, aus dem du die Karten erstellen sollst:';
+
+$string['prompt_template_cloze'] = 'Erstelle aus folgendem Text Lückentext-Karteikarten zum Lernen. 
+Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown und trenne alle Karten mit ===CARD===. Die Lücke in der Frage wird mit [...] markiert, die gesuchte Antwort kommt in das Feld A.
+Schreibe keine Einleitung, nur den reinen Text-Code.
+
+Beispiel für das gewünschte Ausgabeformat:
+===CARD===
+Q: Die Hauptstadt von Frankreich ist [...].
+A: Paris
+H: Stadt der Liebe
+
+===CARD===
+Q: Albert Einstein formulierte die [...].
+A: Relativitätstheorie
 
 Hier ist der Text, aus dem du die Karten erstellen sollst:';
 $string['importcards'] = 'Karten importieren';

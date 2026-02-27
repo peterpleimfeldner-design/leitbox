@@ -98,7 +98,13 @@ $string['bulkimport'] = 'Bulk Import (AI / Text)';
 $string['bulkimportdesc'] = 'Paste a formatted text block to import multiple cards at once.';
 $string['exportcards'] = 'Export cards (.txt)';
 $string['prompt_instruction'] = 'Copy this prompt and use it with any AI to generate cards from your material:';
-$string['prompt_template'] = 'Create flashcards from the following text for studying. 
+$string['prompt_type_selection'] = 'Select a learning method / question type:';
+$string['prompt_type_standard'] = 'Standard (Q&A)';
+$string['prompt_type_tf'] = 'True or False';
+$string['prompt_type_vocab'] = 'Vocabulary / Terms';
+$string['prompt_type_cloze'] = 'Fill-in-the-blank';
+
+$string['prompt_template_standard'] = 'Create flashcards from the following text for studying. 
 Format each card EXACTLY like this, with no markdown (no asterisks, no hashes), and separate all cards with ===CARD===. 
 Do not write an introduction, only the pure text code.
 
@@ -111,6 +117,54 @@ H: City of Love
 ===CARD===
 Q: Who formulated the theory of relativity?
 A: Albert Einstein
+
+Here is the text you should create the cards from:';
+
+$string['prompt_template_tf'] = 'Create True/False flashcards from the following text for studying. 
+Format each card EXACTLY like this, with no markdown, and separate all cards with ===CARD===. 
+Do not write an introduction, only the pure text code.
+
+Example of the requested output format:
+===CARD===
+Q: True or False: Paris is the capital of Spain.
+A: False. Paris is the capital of France.
+H: Think of the Eiffel Tower.
+
+===CARD===
+Q: True or False: The Earth is flat.
+A: False.
+
+Here is the text you should create the cards from:';
+
+$string['prompt_template_vocab'] = 'Extract the most important vocabulary or terms from the following text and create flashcards for studying. 
+Format each card EXACTLY like this, with no markdown, and separate all cards with ===CARD===. 
+Do not write an introduction, only the pure text code.
+
+Example of the requested output format:
+===CARD===
+Q: The house (German)
+A: Das Haus
+H: Building for living
+
+===CARD===
+Q: Mitosis
+A: Cell nucleus division
+
+Here is the text you should create the cards from:';
+
+$string['prompt_template_cloze'] = 'Create fill-in-the-blank flashcards from the following text for studying. 
+Format each card EXACTLY like this, with no markdown, and separate all cards with ===CARD===. The blank in the question is marked with [...], the required answer goes into the A field.
+Do not write an introduction, only the pure text code.
+
+Example of the requested output format:
+===CARD===
+Q: The capital of France is [...].
+A: Paris
+H: City of Love
+
+===CARD===
+Q: Albert Einstein formulated the [...].
+A: Theory of Relativity
 
 Here is the text you should create the cards from:';
 $string['importcards'] = 'Import Cards';

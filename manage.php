@@ -233,11 +233,44 @@ echo html_writer::tag('h3', get_string('bulkimport', 'mod_recall'));
 echo html_writer::tag('p', get_string('bulkimportdesc', 'mod_recall'));
 
 // Display AI Prompt template
-$prompt_template = get_string('prompt_template', 'mod_recall');
+$prompt_standard = get_string('prompt_template_standard', 'mod_recall');
+$prompt_tf       = get_string('prompt_template_tf', 'mod_recall');
+$prompt_vocab    = get_string('prompt_template_vocab', 'mod_recall');
+$prompt_cloze    = get_string('prompt_template_cloze', 'mod_recall');
+
+$prompt_options = [
+    'standard' => get_string('prompt_type_standard', 'mod_recall'),
+    'tf'       => get_string('prompt_type_tf', 'mod_recall'),
+    'vocab'    => get_string('prompt_type_vocab', 'mod_recall'),
+    'cloze'    => get_string('prompt_type_cloze', 'mod_recall'),
+];
+
+echo html_writer::tag('div', 
+    html_writer::tag('strong', get_string('prompt_type_selection', 'mod_recall')) . '<br>' .
+    html_writer::select($prompt_options, 'prompt_type_selector', 'standard', false, ['id' => 'prompt_selector', 'class' => 'custom-select form-control mb-3 mt-1 w-100'])
+, ['class' => 'mb-2']);
+
 echo html_writer::tag('div', 
     html_writer::tag('strong', get_string('prompt_instruction', 'mod_recall')) . '<br>' .
-    html_writer::tag('pre', s($prompt_template), ['class' => 'bg-light p-3 border rounded', 'style' => 'white-space: pre-wrap; font-size: 0.9em;'])
+    html_writer::tag('pre', s($prompt_standard), ['id' => 'prompt_display', 'class' => 'bg-light p-3 border rounded', 'style' => 'white-space: pre-wrap; font-size: 0.9em;'])
 , ['class' => 'mb-4']);
+
+echo '<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var prompts = {
+        "standard": ' . json_encode($prompt_standard) . ',
+        "tf": ' . json_encode($prompt_tf) . ',
+        "vocab": ' . json_encode($prompt_vocab) . ',
+        "cloze": ' . json_encode($prompt_cloze) . '
+    };
+    var selector = document.getElementById("prompt_selector");
+    if (selector) {
+        selector.addEventListener("change", function(e) {
+            document.getElementById("prompt_display").innerText = prompts[e.target.value];
+        });
+    }
+});
+</script>';
 
 echo html_writer::start_tag('form', ['action' => 'manage.php', 'method' => 'post', 'class' => 'mform']);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
