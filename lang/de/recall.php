@@ -103,6 +103,8 @@ $string['prompt_type_standard'] = 'Standard (Frage & Antwort)';
 $string['prompt_type_tf'] = 'Wahr oder Falsch';
 $string['prompt_type_vocab'] = 'Vokabeln / Fachbegriffe';
 $string['prompt_type_cloze'] = 'Lückentext';
+$string['prompt_type_jeopardy'] = 'Jeopardy (Antwort-Frage)';
+$string['prompt_type_transfer'] = 'Transfer & Alltagsbezug';
 
 $string['prompt_template_standard'] = 'Erstelle aus folgendem Text Karteikarten zum Lernen. 
 Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown (keine Sternchen, keine Rauten) und trenne alle Karten mit ===CARD===. 
@@ -165,6 +167,40 @@ H: Stadt der Liebe
 ===CARD===
 Q: Albert Einstein formulierte die [...].
 A: Relativitätstheorie
+
+Hier ist der Text, aus dem du die Karten erstellen sollst:';
+
+$string['prompt_template_jeopardy'] = 'Erstelle basierend auf dem folgenden Thema oder Text Karteikarten im Jeopardy-Stil zum Lernen. 
+Die Frage (Q) beschreibt eine Wirkung, einen Begriff oder ein Phänomen, und die Antwort (A) muss zwingend als Gegenfrage formuliert sein (z.B. "Was ist...?").
+Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown und trenne alle Karten mit ===CARD===. 
+Schreibe keine Einleitung, nur den reinen Text-Code.
+
+Beispiele für das gewünschte Ausgabeformat:
+===CARD===
+Q: Ohne dieses Gas aus der Luft könnte die Pflanze keinen Zucker aufbauen.
+A: Was ist Kohlendioxid (CO2)?
+H: Es ist ein Treibhausgas.
+
+===CARD===
+Q: Diesen Stoff produziert die Pflanze als Energieträger für sich selbst.
+A: Was ist Glukose (Traubenzucker)?
+
+Hier ist der Text, aus dem du die Karten erstellen sollst:';
+
+$string['prompt_template_transfer'] = 'Erstelle basierend auf dem folgenden Thema oder Text Karteikarten mit Fokus auf Transferleistungen und Alltagsbezug. 
+Die Fragen sollen zum "Um-die-Ecke-Denken" anregen (Warum-Fragen, Was-wäre-wenn-Szenarien).
+Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown und trenne alle Karten mit ===CARD===. 
+Schreibe keine Einleitung, nur den reinen Text-Code.
+
+Beispiele für das gewünschte Ausgabeformat:
+===CARD===
+Q: Warum "atmen" Pflanzen nachts Sauerstoff ein, obwohl sie ihn tagsüber produzieren?
+A: Weil sie nachts keine Photosynthese betreiben können, aber Energie durch Zellatmung verbrauchen.
+
+===CARD===
+Q: Was würde passieren, wenn man eine Pflanze nur mit grünem Licht bestrahlt?
+A: Sie würde eingehen, da sie grünes Licht reflektiert und nicht zur Energiegewinnung nutzen kann.
+H: Denke daran, warum Blätter grün aussehen.
 
 Hier ist der Text, aus dem du die Karten erstellen sollst:';
 $string['importcards'] = 'Karten importieren';

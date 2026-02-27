@@ -103,6 +103,8 @@ $string['prompt_type_standard'] = 'Standard (Q&A)';
 $string['prompt_type_tf'] = 'True or False';
 $string['prompt_type_vocab'] = 'Vocabulary / Terms';
 $string['prompt_type_cloze'] = 'Fill-in-the-blank';
+$string['prompt_type_jeopardy'] = 'Jeopardy (Answer-Question)';
+$string['prompt_type_transfer'] = 'Transfer & Everyday Context';
 
 $string['prompt_template_standard'] = 'Create flashcards from the following text for studying. 
 Format each card EXACTLY like this, with no markdown (no asterisks, no hashes), and separate all cards with ===CARD===. 
@@ -165,6 +167,40 @@ H: City of Love
 ===CARD===
 Q: Albert Einstein formulated the [...].
 A: Theory of Relativity
+
+Here is the text you should create the cards from:';
+
+$string['prompt_template_jeopardy'] = 'Create Jeopardy-style flashcards based on the following topic or text for studying. 
+The question (Q) describes an effect, term, or phenomenon, and the answer (A) must strictly be formulated as a counter-question (e.g., "What is...?").
+Format each card EXACTLY like this, with no markdown, and separate all cards with ===CARD===. 
+Do not write an introduction, only the pure text code.
+
+Example of the requested output format:
+===CARD===
+Q: Without this gas from the air, the plant could not build sugar.
+A: What is Carbon Dioxide (CO2)?
+H: It is a greenhouse gas.
+
+===CARD===
+Q: The plant produces this substance as an energy carrier for itself.
+A: What is Glucose?
+
+Here is the text you should create the cards from:';
+
+$string['prompt_template_transfer'] = 'Create flashcards based on the following topic or text focusing on transfer of learning and everyday context. 
+The questions should encourage out-of-the-box thinking (why-questions, what-if scenarios).
+Format each card EXACTLY like this, with no markdown, and separate all cards with ===CARD===. 
+Do not write an introduction, only the pure text code.
+
+Example of the requested output format:
+===CARD===
+Q: Why do plants "breathe" oxygen at night even though they produce it during the day?
+A: Because they cannot photosynthesize at night but consume energy through cellular respiration.
+
+===CARD===
+Q: What would happen if a plant were only exposed to green light?
+A: It would die because it reflects green light and cannot use it to generate energy.
+H: Think about why leaves look green.
 
 Here is the text you should create the cards from:';
 $string['importcards'] = 'Import Cards';

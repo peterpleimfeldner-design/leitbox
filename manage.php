@@ -237,12 +237,16 @@ $prompt_standard = get_string('prompt_template_standard', 'mod_recall');
 $prompt_tf       = get_string('prompt_template_tf', 'mod_recall');
 $prompt_vocab    = get_string('prompt_template_vocab', 'mod_recall');
 $prompt_cloze    = get_string('prompt_template_cloze', 'mod_recall');
+$prompt_jeopardy = get_string('prompt_template_jeopardy', 'mod_recall');
+$prompt_transfer = get_string('prompt_template_transfer', 'mod_recall');
 
 $prompt_options = [
     'standard' => get_string('prompt_type_standard', 'mod_recall'),
     'tf'       => get_string('prompt_type_tf', 'mod_recall'),
     'vocab'    => get_string('prompt_type_vocab', 'mod_recall'),
     'cloze'    => get_string('prompt_type_cloze', 'mod_recall'),
+    'jeopardy' => get_string('prompt_type_jeopardy', 'mod_recall'),
+    'transfer' => get_string('prompt_type_transfer', 'mod_recall'),
 ];
 
 echo html_writer::tag('div', 
@@ -261,7 +265,9 @@ document.addEventListener("DOMContentLoaded", function() {
         "standard": ' . json_encode($prompt_standard) . ',
         "tf": ' . json_encode($prompt_tf) . ',
         "vocab": ' . json_encode($prompt_vocab) . ',
-        "cloze": ' . json_encode($prompt_cloze) . '
+        "cloze": ' . json_encode($prompt_cloze) . ',
+        "jeopardy": ' . json_encode($prompt_jeopardy) . ',
+        "transfer": ' . json_encode($prompt_transfer) . '
     };
     var selector = document.getElementById("prompt_selector");
     if (selector) {
