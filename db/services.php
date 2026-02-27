@@ -38,5 +38,12 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
     ),
+    'mod_recall_reset_progress' => array(
+        'classname' => 'mod_recall\external',
+        'methodname' => 'reset_progress',
+        'classpath' => 'mod/recall/classes/external.php',
+        'description' => 'Reset all card progress for the current user',
+        'type' => 'write',
+        'ajax' => true,
+    ),
 );
-

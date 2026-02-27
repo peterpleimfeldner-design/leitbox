@@ -1,0 +1,17 @@
+/**
+ * Moodle Plugin: Recall
+ * Standard Moodle CSS to fix UI issues.
+ */
+
+/* Fix distortion of the activity icon in the header */
+.path-mod-recall .activity-header .activity-icon {
+    width: 64px !important;
+    height: 64px !important;
+    object-fit: contain !important;
+    background-color: transparent !important;
+}
+
+/* Ensure the icon in the breadcrumbs/activity selector is also crisp */
+.path-mod-recall .page-header-image img {
+    object-fit: contain !important;
+}

@@ -171,7 +171,11 @@ class external extends external_api {
             // Stays in current box, just updates timestamp
         } else { // Red
             $progress->count_wrong++;
-            $progress->box_number = 1; // Incorrect goes back to Box 1
+            if ($progress->box_number > 1) {
+                $progress->box_number--; // Go back one box
+            } else {
+                $progress->box_number = 1; // Stay in box 1 as minimum
+            }
         }
 
         $DB->update_record('recall_progress', $progress);
@@ -188,5 +192,43 @@ class external extends external_api {
             'new_box' => new external_value(PARAM_INT, 'The new box number for this card'),
         ]);
     }
-}
 
+    public static function reset_progress_parameters() {
+        return new external_function_parameters([
+            'instanceid' => new external_value(PARAM_INT, 'The recall instance id'),
+        ]);
+    }
+
+    public static function reset_progress($instanceid) {
+        global $DB, $USER;
+
+        $params = self::validate_parameters(self::reset_progress_parameters(), [
+            'instanceid' => $instanceid,
+        ]);
+
+        $cm = get_coursemodule_from_instance('recall', $params['instanceid']);
+        if (!$cm) {
+            throw new \moodle_exception('invalidcoursemodule');
+        }
+        $context = \context_module::instance($cm->id);
+        self::validate_context($context);
+
+        // Get all card IDs belonging to this instance.
+        $cardids = $DB->get_fieldset_select('recall_cards', 'id', 'recallid = ?', [$params['instanceid']]);
+
+        if (!empty($cardids)) {
+            list($insql, $inparams) = $DB->get_in_or_equal($cardids);
+            $inparams[] = $USER->id;
+            $DB->delete_records_select('recall_progress', "cardid $insql AND userid = ?", $inparams);
+        }
+
+        return ['success' => true, 'reset_count' => count($cardids)];
+    }
+
+    public static function reset_progress_returns() {
+        return new external_single_structure([
+            'success'     => new external_value(PARAM_BOOL, 'Success indicator'),
+            'reset_count' => new external_value(PARAM_INT,  'Number of cards reset'),
+        ]);
+    }
+}

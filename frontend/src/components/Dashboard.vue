@@ -1,211 +1,590 @@
 <template>
-  <div class="max-w-5xl mx-auto p-6 lg:p-10">
-    <header class="mb-12 text-center relative">
-      <h2 class="text-4xl lg:text-5xl font-extrabold text-[#4F46E5] tracking-tight pb-2">{{ getString('dashboardtitle') }}</h2>
-      <p class="text-slate-500 mt-3 text-lg">{{ getString('dashboardsbtitle') }}</p>
-      
-      <button @click="showInfo = true" class="mt-4 md:absolute md:top-0 md:right-0 md:mt-0 text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-full font-medium transition-colors flex items-center justify-center gap-2 mx-auto border border-indigo-100">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        {{ getString('howitworks') }}
-      </button>
+  <div class="rc-wrap">
+
+    <!-- ═══ HEADER ═══ -->
+    <header class="rc-header" role="banner">
+      <div class="rc-header-brand">
+        <img :src="getLogoUrl()" alt="Recall" class="rc-logo" />
+        <div class="rc-header-text">
+          <div class="rc-title-row">
+            <h1 class="rc-title">{{ getString('dashboardtitle') }}</h1>
+            <div class="rc-header-actions">
+              <button @click="showInfo = true" class="rc-btn rc-btn--ghost rc-btn--sm" :aria-label="getString('howitworks')">
+                <svg aria-hidden="true" class="rc-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ getString('howitworks') }}
+              </button>
+              <button @click="showReset = true" class="rc-btn-reset" :aria-label="getString('reset_progress')" :title="getString('reset_progress')">
+                <span aria-hidden="true">🔄</span>
+              </button>
+            </div>
+          </div>
+          <p class="rc-subtitle">{{ getString('dashboardsbtitle') }}</p>
+        </div>
+      </div>
     </header>
 
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-      <div v-for="box in 6" :key="box" 
-           @click="startSession(box - 1)"
-           class="rounded-3xl p-8 flex flex-col items-center justify-center transition-all duration-300 group shadow-sm hover:shadow-md"
-           :class="getBoxOuterClass(box - 1, counts[box-1])">
-        
-        <div class="text-5xl mb-4 group-hover:-translate-y-1 transition-transform duration-300">
-          {{ getBoxEmoji(box-1) }}
-        </div>
-        
-        <h3 class="font-extrabold text-slate-800 text-xl tracking-wide uppercase mb-4">{{ getBoxName(box - 1) }}</h3>
-        
-        <div class="flex items-center justify-center">
-          <!-- Active Card Count Badge -->
-          <div v-if="counts[box-1] > 0" 
-               class="px-3 py-1 rounded-full text-sm font-bold flex items-center justify-center gap-1.5 shadow-sm border"
-               :class="getBadgeClass(box-1)">
-            <span class="w-2 h-2 rounded-full animate-pulse" :class="getBadgeDotClass(box-1)"></span>
+    <!-- ═══ PROGRESS BAR ═══ -->
+    <div class="rc-progress-bar" role="progressbar" :aria-valuemin="0" :aria-valuemax="totalCards" :aria-valuenow="masteredCards" :aria-label="'Fortschritt: ' + masteredCards + ' von ' + totalCards + ' Karten gelernt'">
+      <div class="rc-progress-fill" :style="{ width: progressPercent + '%' }"></div>
+    </div>
+    <p class="rc-progress-label" aria-hidden="true">
+      <span v-if="totalCards > 0">{{ masteredCards }}/{{ totalCards }} Karten in Stufe Experte</span>
+    </p>
+
+    <!-- ═══ BOX GRID ═══ -->
+    <main>
+      <div class="rc-grid" role="list">
+        <div
+          v-for="box in 6"
+          :key="box"
+          @click="startSession(box - 1)"
+          @keydown.enter.space.prevent="startSession(box - 1)"
+          class="rc-box"
+          :class="[getBoxColorClass(box - 1), (counts[box-1] || 0) === 0 ? 'rc-box--empty' : 'rc-box--active']"
+          :role="(counts[box-1] || 0) > 0 ? 'button' : 'listitem'"
+          :tabindex="(counts[box-1] || 0) > 0 ? 0 : -1"
+          :aria-label="getBoxName(box - 1) + ': ' + (counts[box-1] || 0) + ' ' + getString('cards')"
+          :aria-disabled="(counts[box-1] || 0) === 0"
+        >
+          <!-- colour stripe -->
+          <div class="rc-box-stripe" aria-hidden="true"></div>
+
+          <!-- emoji -->
+          <div class="rc-box-emoji" aria-hidden="true">{{ getBoxEmoji(box - 1) }}</div>
+
+          <!-- name -->
+          <h2 class="rc-box-name">{{ getBoxName(box - 1) }}</h2>
+
+          <!-- badge -->
+          <div v-if="counts[box-1] > 0" class="rc-badge rc-badge--active" aria-live="polite">
+            <span class="rc-badge-dot" aria-hidden="true"></span>
             {{ counts[box-1] }} {{ getString('cards') }}
           </div>
-          
-          <!-- Empty Card Count Badge -->
-          <div v-else-if="counts[box-1] === 0" 
-               class="px-3 py-1 rounded-full text-sm font-medium border border-dashed border-slate-300 bg-slate-100 text-slate-500 flex items-center justify-center gap-1.5">
+          <div v-else-if="counts[box-1] === 0" class="rc-badge rc-badge--empty">
             0 {{ getString('cards') }}
           </div>
-          
-          <!-- Loading state -->
-          <div v-else class="text-slate-400">
-             <svg class="animate-spin h-5 w-5 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-             </svg>
+          <div v-else class="rc-badge rc-badge--loading" role="status" :aria-label="getString('loadingcards')">
+            <svg aria-hidden="true" class="rc-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          </div>
+
+          <!-- arrow -->
+          <div v-if="(counts[box-1] || 0) > 0" class="rc-box-arrow" aria-hidden="true">→</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ═══ HOW-IT-WORKS MODAL ═══ -->
+    <Teleport to="body">
+      <Transition name="rc-fade">
+        <div v-if="showInfo" class="rc-overlay" @click.self="showInfo = false" role="dialog" aria-modal="true" :aria-label="getString('systemtitle')">
+          <div class="rc-modal">
+            <button @click="showInfo = false" class="rc-modal-close" :aria-label="'Schließen'">×</button>
+            <div class="rc-modal-head">
+              <span aria-hidden="true">🎓</span>
+              <h2>{{ getString('systemtitle') }}</h2>
+            </div>
+            <p class="rc-modal-intro" v-html="getString('systemintro')"></p>
+            <div class="rc-modal-rules">
+              <div class="rc-rule">
+                <span class="rc-rule-dot rc-rule-dot--green" aria-hidden="true">✓</span>
+                <div><strong>{{ getString('known_btn') }}</strong><p v-html="getString('known_desc')"></p></div>
+              </div>
+              <div class="rc-rule">
+                <span class="rc-rule-dot rc-rule-dot--yellow" aria-hidden="true">↺</span>
+                <div><strong>{{ getString('again_btn') }}</strong><p v-html="getString('again_desc')"></p></div>
+              </div>
+              <div class="rc-rule">
+                <span class="rc-rule-dot rc-rule-dot--red" aria-hidden="true">↓</span>
+                <div><strong>{{ getString('hard_btn') }}</strong><p v-html="getString('hard_desc')"></p></div>
+              </div>
+            </div>
+            <div class="rc-modal-tip" v-html="getString('systemtip')"></div>
+            <button @click="showInfo = false" class="rc-btn rc-btn--primary rc-btn--full">
+              {{ getString('gotit') }}
+            </button>
           </div>
         </div>
+      </Transition>
+    </Teleport>
 
-      </div>
-    </div>
-
-    <!-- Info Modal -->
+    <!-- ═══ RESET CONFIRMATION MODAL ═══ -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showInfo" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" @click="showInfo = false">
-          <!-- Backdrop -->
-          <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"></div>
-          
-          <!-- Modal Panel -->
-          <div class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 sm:p-10 overflow-hidden transform transition-all" @click.stop>
-            <button @click="showInfo = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            
-            <h3 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
-              <span class="bg-indigo-100 text-indigo-600 p-2 rounded-xl">🎓</span> {{ getString('systemtitle') }}
-            </h3>
-            
-            <div class="space-y-6 text-slate-600">
-              <p class="text-lg" v-html="getString('systemintro')"></p>
-              
-              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-4">
-                <div class="flex items-start gap-4">
-                  <div class="mt-1 bg-emerald-100 text-emerald-700 p-1.5 rounded-lg shrink-0">🟢</div>
-                  <div>
-                    <h4 class="font-bold text-slate-800">{{ getString('known_btn') }}</h4>
-                    <p class="text-sm mt-1" v-html="getString('known_desc')"></p>
-                  </div>
-                </div>
-                
-                <div class="flex items-start gap-4">
-                  <div class="mt-1 bg-yellow-100 text-yellow-700 p-1.5 rounded-lg shrink-0">🟡</div>
-                  <div>
-                    <h4 class="font-bold text-slate-800">{{ getString('again_btn') }}</h4>
-                    <p class="text-sm mt-1" v-html="getString('again_desc')"></p>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-4">
-                  <div class="mt-1 bg-red-100 text-red-700 p-1.5 rounded-lg shrink-0">🔴</div>
-                  <div>
-                    <h4 class="font-bold text-slate-800">{{ getString('hard_btn') }}</h4>
-                    <p class="text-sm mt-1" v-html="getString('hard_desc')"></p>
-                  </div>
-                </div>
-              </div>
-              
-              <p class="text-sm bg-indigo-50 text-indigo-800 p-4 rounded-xl border border-indigo-100" v-html="getString('systemtip')"></p>
+      <Transition name="rc-fade">
+        <div v-if="showReset" class="rc-overlay" @click.self="showReset = false" role="alertdialog" aria-modal="true" :aria-label="getString('reset_progress_confirm_title')">
+          <div class="rc-modal rc-modal--warning">
+            <button @click="showReset = false" class="rc-modal-close" :aria-label="'Abbrechen'">×</button>
+            <div class="rc-modal-head">
+              <span aria-hidden="true">⚠️</span>
+              <h2>{{ getString('reset_progress_confirm_title') }}</h2>
             </div>
-            
-            <div class="mt-8">
-              <button @click="showInfo = false" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-colors">
-                {{ getString('gotit') }}
+            <p class="rc-modal-warning-text" v-html="getString('reset_progress_confirm_msg')"></p>
+            <div v-if="resetError" class="rc-alert rc-alert--error" role="alert">
+              ❌ {{ resetError }}
+            </div>
+            <div class="rc-modal-actions">
+              <button @click="showReset = false" class="rc-btn rc-btn--ghost">
+                {{ getString('reset_progress_cancel') }}
+              </button>
+              <button @click="doReset" class="rc-btn rc-btn--danger" :disabled="resetting">
+                <svg v-if="resetting" aria-hidden="true" class="rc-spin rc-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                {{ getString('reset_progress_btn') }}
               </button>
             </div>
           </div>
         </div>
       </Transition>
     </Teleport>
+
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { getBoxCounts } from '../api';
+import { onMounted, ref, computed } from 'vue';
+import { getBoxCounts, getLogoUrl, resetProgress } from '../api';
 
 const emit = defineEmits(['start-session']);
-
 const counts = ref({});
 const showInfo = ref(false);
+const showReset = ref(false);
+const resetting = ref(false);
+const resetSuccess = ref(false);
+const resetError = ref('');
+
+const totalCards = computed(() => Object.values(counts.value).reduce((s, v) => s + (v || 0), 0));
+const masteredCards = computed(() => counts.value[5] || 0);
+const progressPercent = computed(() => totalCards.value > 0 ? Math.round((masteredCards.value / totalCards.value) * 100) : 0);
 
 const loadCounts = async () => {
-    try {
-        counts.value = await getBoxCounts();
-    } catch (e) {
-        console.error("Failed to load counts", e);
-    }
+    try { counts.value = await getBoxCounts(); }
+    catch (e) { console.error('Failed to load counts', e); }
+};
+
+const FALLBACKS = {
+    // Header
+    dashboardtitle: 'Deine Recall Karten',
+    dashboardsbtitle: 'Wähle einen Lernstapel zum Üben aus',
+    howitworks: 'Wie funktioniert das?',
+    cards: 'Karten',
+    loadingcards: 'Karten werden geladen...',
+    // Box levels
+    box0: 'Neu',
+    box1: 'Einsteiger',
+    box2: 'Lernender',
+    box3: 'Fortgeschritten',
+    box4: 'Erfahren',
+    box5: 'Experte',
+    // Info modal
+    systemtitle: 'Das Lernstapel-System',
+    systemintro: 'Dieses Plugin verwendet das bewährte <strong>Spaced Repetition System</strong> (verteilte Wiederholung). Ziel ist es, Karten von links nach rechts in den letzten Stapel zu befördern.',
+    known_btn: 'Gewusst',
+    known_desc: 'Die Karte war einfach! Sie rückt einen Stapel weiter nach rechts.',
+    again_btn: 'Nochmal',
+    again_desc: 'Du warst dir unsicher. Die Karte bleibt im aktuellen Stapel.',
+    hard_btn: 'Schwer',
+    hard_desc: 'Nicht gewusst! Die Karte rückt einen Stapel zurück.',
+    systemtip: '<strong>Tipp:</strong> Beschäftige dich mit den Themen hinter den Karten, die du nicht wusstest – bevor du einen neuen Versuch startest.',
+    gotit: 'Verstanden, los geht\'s!',
+    // Reset
+    reset_progress: 'Fortschritt zurücksetzen',
+    reset_progress_confirm_title: 'Lernfortschritt zurücksetzen?',
+    reset_progress_confirm_msg: 'Wirklich zurücksetzen? Dein bisheriger Fortschritt geht dadurch verloren.',
+    reset_progress_btn: 'Ja, zurücksetzen',
+    reset_progress_cancel: 'Abbrechen',
+    reset_progress_done: '✅ Lernfortschritt wurde erfolgreich zurückgesetzt!',
 };
 
 const getString = (key) => {
-    if (window.M && window.M.str && window.M.str.mod_recall && window.M.str.mod_recall[key]) {
-        return window.M.str.mod_recall[key];
-    }
-    return key;
+    // 1. Try Moodle's loaded strings
+    const moodleStr = window.M?.str?.mod_recall?.[key];
+    // 2. Only use Moodle string if it's valid (not a [[placeholder]])
+    if (moodleStr && !moodleStr.startsWith('[[')) return moodleStr;
+    // 3. Fall back to hardcoded defaults
+    return FALLBACKS[key] ?? key;
 };
 
-onMounted(() => {
-    loadCounts();
-});
+onMounted(loadCounts);
 
-const getBoxEmoji = (box) => {
-    const emojis = ['🆕', '🚨', '📚', '🔄', '🧠', '🏆'];
-    return emojis[box] || '📦';
-};
+const getBoxEmoji = (box) => ['🆕','🔁','📖','🔥','💡','🏆'][box] ?? '📦';
+const getBoxName = (box) => getString('box' + box);
 
-const getBoxName = (box) => {
-    return getString('box' + box);
-};
-
-const getBoxOuterClass = (box, count) => {
-    if (count === 0) {
-        return 'opacity-60 border-2 border-dashed border-slate-300 bg-slate-50 hover:opacity-80 pointer-events-none cursor-default';
-    }
-    const styles = [
-        'bg-white border-l-4 border-l-blue-400 border border-slate-200 cursor-pointer hover:-translate-y-1',     // Box 0
-        'bg-white border-l-4 border-l-orange-500 border border-slate-200 cursor-pointer hover:-translate-y-1',   // Box 1
-        'bg-white border-l-4 border-l-yellow-400 border border-slate-200 cursor-pointer hover:-translate-y-1',   // Box 2
-        'bg-white border-l-4 border-l-lime-400 border border-slate-200 cursor-pointer hover:-translate-y-1',     // Box 3
-        'bg-white border-l-4 border-l-emerald-400 border border-slate-200 cursor-pointer hover:-translate-y-1',  // Box 4
-        'bg-white border-l-4 border-l-green-500 border border-slate-200 cursor-pointer hover:-translate-y-1',    // Box 5
-    ];
-    return styles[box] || 'bg-white border border-slate-200 cursor-pointer hover:-translate-y-1';
-};
-
-const getBadgeClass = (box) => {
-    const styles = [
-        'bg-blue-50 text-blue-700 border-blue-200',
-        'bg-orange-50 text-orange-800 border-orange-200',
-        'bg-yellow-50 text-yellow-800 border-yellow-200',
-        'bg-lime-50 text-lime-800 border-lime-200',
-        'bg-emerald-50 text-emerald-800 border-emerald-200',
-        'bg-green-100 text-green-800 border-green-300',
-    ];
-    return styles[box] || 'bg-slate-100 text-slate-600 border-slate-200';
-};
-
-const getBadgeDotClass = (box) => {
-    const styles = ['bg-blue-500', 'bg-orange-500', 'bg-yellow-500', 'bg-lime-500', 'bg-emerald-500', 'bg-green-600'];
-    return styles[box] || 'bg-slate-500';
-};
-
+const getBoxColorClass = (box) => [
+    'rc-box--teal',
+    'rc-box--orange',
+    'rc-box--blue',
+    'rc-box--purple',
+    'rc-box--cyan',
+    'rc-box--gold',
+][box] ?? 'rc-box--teal';
 
 const startSession = (boxnumber) => {
-    if (counts.value[boxnumber] > 0) {
-        emit('start-session', boxnumber);
+    if ((counts.value[boxnumber] ?? 0) > 0) emit('start-session', boxnumber);
+};
+
+const doReset = async () => {
+    resetting.value = true;
+    resetSuccess.value = false;
+    resetError.value = '';
+    try {
+        const appConfig = JSON.parse(document.getElementById('v-app-mod-recall')?.dataset?.config || '{}');
+        await resetProgress(appConfig.instanceid);
+        await loadCounts();
+        showReset.value = false;
+    } catch (e) {
+        resetError.value = 'Fehler beim Zurücksetzen: ' + (e.message || 'Unbekannter Fehler');
+    } finally {
+        resetting.value = false;
     }
 };
 </script>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
+/* ─── tokens ──────────────── */
+.rc-wrap {
+  --teal: #00a693;
+  --navy: #1d2757;
+  --teal-pastel: #f0fdf9;
+  --teal-mid: #ccf5ee;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+  color: var(--navy);
 }
 
-.modal-enter-active .relative,
-.modal-leave-active .relative {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* ─── header ──────────────── */
+.rc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 28px 0 20px;
+}
+.rc-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.rc-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  margin-left: -8px; /* pull closer to left edge */
+}
+.rc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.rc-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+.rc-subtitle {
+  font-size: 0.97rem;
+  color: #64748b;
+  margin: 0;
+}
+.rc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
+/* ─── buttons ──────────────── */
+.rc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.rc-btn--sm {
+  padding: 6px 14px;
+  min-height: 36px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+.rc-btn--ghost {
+  background: #f0f4f8;
+  color: var(--navy);
+  border-color: #dde3ec;
+}
+.rc-btn--ghost:hover { background: var(--teal-mid); border-color: var(--teal); color: #00766b; }
+.rc-btn-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff5f5;
+  border: 1px dashed #fca5a5;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+.rc-btn-reset:hover {
+  background: #fee2e2;
+  border-style: solid;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+.rc-btn-reset:focus-visible { outline: 2px solid #ef4444; outline-offset: 2px; }
+
+.rc-btn--danger-ghost {
+  background: #fff5f5;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+.rc-btn--danger-ghost:hover { background: #fee2e2; border-color: #f87171; }
+.rc-btn--danger {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+.rc-btn--danger:hover { background: #b91c1c; border-color: #b91c1c; }
+.rc-btn--danger:disabled { opacity: 0.6; cursor: not-allowed; }
+.rc-btn--primary {
+  background: linear-gradient(135deg, var(--teal), var(--navy));
+  color: #fff;
+  border-color: transparent;
+}
+.rc-btn--primary:hover { opacity: 0.88; }
+.rc-btn--full { width: 100%; justify-content: center; }
+.rc-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+.rc-btn:focus:not(:focus-visible) { outline: none; }
+
+/* ─── icon ──────────────── */
+.rc-icon { width: 17px; height: 17px; flex-shrink: 0; }
+
+/* ─── progress ──────────────── */
+.rc-progress-bar {
+  height: 7px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.rc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--navy));
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+.rc-progress-label {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0 0 28px;
 }
 
-.modal-enter-from .relative,
-.modal-leave-to .relative {
-  transform: scale(0.95) translateY(20px);
-  opacity: 0;
+/* ─── grid ──────────────── */
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
 }
+@media (max-width: 640px) { .rc-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ─── box card ──────────────── */
+.rc-box {
+  position: relative;
+  border-radius: 18px;
+  padding: 28px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid transparent;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: var(--teal-pastel);
+}
+
+/* ── colour variants ── */
+.rc-box--teal   { background: #edfdf8; border-color: #b2f0e3; }
+.rc-box--orange { background: #fff7ed; border-color: #fed7aa; }
+.rc-box--blue   { background: #eff6ff; border-color: #bfdbfe; }
+.rc-box--purple { background: #f5f3ff; border-color: #ddd6fe; }
+.rc-box--cyan   { background: #ecfeff; border-color: #a5f3fc; }
+.rc-box--gold   { background: linear-gradient(135deg,#00a693 0%,#1d2757 100%); border-color: transparent; color: #fff; }
+
+/* stripe */
+.rc-box-stripe {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 18px 18px 0 0;
+}
+.rc-box--teal   .rc-box-stripe { background: #00a693; }
+.rc-box--orange .rc-box-stripe { background: #f97316; }
+.rc-box--blue   .rc-box-stripe { background: #3b82f6; }
+.rc-box--purple .rc-box-stripe { background: #8b5cf6; }
+.rc-box--cyan   .rc-box-stripe { background: #06b6d4; }
+.rc-box--gold   .rc-box-stripe { background: rgba(255,255,255,0.25); }
+
+/* active / empty states */
+.rc-box--active:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(29,39,87,0.13);
+  cursor: pointer;
+}
+.rc-box--empty {
+  opacity: 0.45;
+  border-style: dashed;
+}
+.rc-box:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+.rc-box:focus:not(:focus-visible) { outline: none; }
+
+.rc-box-emoji { font-size: 2.5rem; transition: transform 0.2s; }
+.rc-box--active:hover .rc-box-emoji { transform: scale(1.18); }
+
+.rc-box-name {
+  font-size: 0.87rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  text-align: center;
+}
+
+/* ─── badge ──────────────── */
+.rc-badge {
+  font-size: 0.77rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent;
+}
+.rc-badge--active {
+  background: rgba(0,166,147,0.18);
+  color: #005f56;
+  border-color: rgba(0,166,147,0.35);
+}
+.rc-box--gold .rc-badge--active {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border-color: rgba(255,255,255,0.4);
+}
+.rc-badge--empty {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  border-style: dashed;
+}
+.rc-badge--loading { color: #94a3b8; }
+.rc-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+  animation: rc-pulse 1.5s infinite;
+}
+.rc-box--gold .rc-badge-dot { background: #fff; }
+
+.rc-box-arrow {
+  position: absolute; bottom: 12px; right: 16px;
+  font-size: 1rem; color: #94a3b8;
+  opacity: 0; transition: opacity 0.2s, transform 0.2s;
+}
+.rc-box--gold .rc-box-arrow { color: rgba(255,255,255,0.6); }
+.rc-box--active:hover .rc-box-arrow { opacity: 1; transform: translateX(3px); }
+
+/* ─── spin ──────────────── */
+.rc-spin { width: 16px; height: 16px; animation: rc-spin 1s linear infinite; }
+
+/* ─── modals ──────────────── */
+.rc-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(15,23,42,0.5);
+  backdrop-filter: blur(4px);
+}
+.rc-modal {
+  position: relative;
+  background: #fff;
+  border-radius: 24px;
+  max-width: 540px; width: 100%;
+  padding: 32px 30px;
+  box-shadow: 0 24px 64px rgba(29,39,87,0.22);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.rc-modal--warning { border-top: 5px solid #dc2626; }
+.rc-modal-close {
+  position: absolute; top: 14px; right: 14px;
+  background: #f1f5f9; border: none; border-radius: 50%;
+  width: 32px; height: 32px; font-size: 1.3rem; line-height: 1;
+  cursor: pointer; color: #64748b;
+}
+.rc-modal-close:hover { background: #e2e8f0; }
+.rc-modal-close:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.rc-modal-head {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+.rc-modal-head span { font-size: 1.8rem; }
+.rc-modal-head h2 { font-size: 1.25rem; font-weight: 800; color: var(--navy); margin: 0; }
+.rc-modal-intro { color: #475569; line-height: 1.65; margin-bottom: 18px; }
+.rc-modal-rules {
+  background: #f8fafc; border-radius: 14px; padding: 18px;
+  display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px;
+}
+.rc-rule { display: flex; align-items: flex-start; gap: 12px; }
+.rc-rule strong { display: block; color: var(--navy); font-weight: 700; margin-bottom: 2px; }
+.rc-rule p { color: #64748b; font-size: 0.88rem; margin: 0; line-height: 1.5; }
+.rc-rule-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 800; flex-shrink: 0; margin-top: 1px;
+}
+.rc-rule-dot--green { background: #dcfce7; color: #15803d; }
+.rc-rule-dot--yellow { background: #fef9c3; color: #a16207; }
+.rc-rule-dot--red   { background: #fee2e2; color: #b91c1c; }
+.rc-modal-tip {
+  background: #edfdf8; border-left: 3px solid var(--teal);
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 0.88rem; color: #0f766e; margin-bottom: 18px;
+}
+.rc-modal-warning-text {
+  color: #374151; line-height: 1.65;
+  background: #fff5f5; border: 1px solid #fecaca;
+  border-radius: 10px; padding: 14px 16px;
+  margin-bottom: 18px; font-size: 0.93rem;
+}
+.rc-modal-actions {
+  display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;
+}
+.rc-alert {
+  border-radius: 10px; padding: 10px 16px;
+  font-size: 0.9rem; font-weight: 600; margin-bottom: 14px;
+}
+.rc-alert--success { background: #dcfce7; color: #15803d; }
+.rc-alert--error   { background: #fee2e2; color: #b91c1c; }
+
+/* ─── transitions ──────────────── */
+.rc-fade-enter-active, .rc-fade-leave-active { transition: opacity 0.22s ease; }
+.rc-fade-enter-from, .rc-fade-leave-to { opacity: 0; }
+
+/* ─── keyframes ──────────────── */
+@keyframes rc-pulse { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+@keyframes rc-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>

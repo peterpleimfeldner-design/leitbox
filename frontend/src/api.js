@@ -57,3 +57,11 @@ export const submitAnswer = (cardid, rating) => {
         rating
     });
 };
+
+export const getLogoUrl = () => {
+    return `${config.wwwroot}/mod/recall/pix/logo.png`;
+};
+
+export const resetProgress = (instanceid) => {
+    return moodleCall('mod_recall_reset_progress', { instanceid });
+};

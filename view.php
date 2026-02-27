@@ -49,7 +49,9 @@ $vuestrings = [
     'hard_btn', 'hard_desc', 'systemtip', 'gotit', 'showhint', 'hint',
     'taptoflip', 'action_back', 'action_stay', 'action_next', 'backtodashboard', 
     'cardxofy_x', 'cardxofy_y', 'loadingcards', 'sessiondone', 'sessiondonedesc', 
-    'completed', 'error_loading_cards', 'box0', 'box1', 'box2', 'box3', 'box4', 'box5'
+    'completed', 'error_loading_cards', 'box0', 'box1', 'box2', 'box3', 'box4', 'box5',
+    'reset_progress', 'reset_progress_confirm_title', 'reset_progress_confirm_msg',
+    'reset_progress_btn', 'reset_progress_cancel', 'reset_progress_done',
 ];
 $PAGE->requires->strings_for_js($vuestrings, 'mod_recall');
 
@@ -74,16 +76,18 @@ echo \html_writer::tag('div', '', [
     'data-config' => json_encode($appdata)
 ]);
 
-// Include Vue build scripts manually to prevent Moodle header/require_js module errors
+// Include Vue build scripts manually with cache-busting
 if (file_exists(__DIR__ . '/dist/assets/index.js')) {
-    $jsurl = new \moodle_url('/mod/recall/dist/assets/index.js');
+    $jsmtime = filemtime(__DIR__ . '/dist/assets/index.js');
+    $jsurl = new \moodle_url('/mod/recall/dist/assets/index.js', ['v' => $jsmtime]);
     echo '<script type="module" crossorigin src="' . $jsurl->out() . '"></script>';
 } else {
     echo \html_writer::tag('p', 'Warning: Vue frontend bundle not found. Please run npm build.', ['class' => 'alert alert-warning mt-3']);
 }
 
 if (file_exists(__DIR__ . '/dist/assets/index.css')) {
-    $cssurl = new \moodle_url('/mod/recall/dist/assets/index.css');
+    $cssmtime = filemtime(__DIR__ . '/dist/assets/index.css');
+    $cssurl = new \moodle_url('/mod/recall/dist/assets/index.css', ['v' => $cssmtime]);
     echo '<link rel="stylesheet" href="' . $cssurl->out() . '">';
 }
 

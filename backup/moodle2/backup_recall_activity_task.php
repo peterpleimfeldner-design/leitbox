@@ -42,11 +42,11 @@ class backup_recall_activity_task extends backup_activity_task {
 
         // Link to the list of recall.
         $search = "/(" . $base . "\/mod\/recall\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@SMARTCARDSINDEX*$2@$', $content);
+        $content = preg_replace($search, '$@RECALLINDEX*$2@$', $content);
 
         // Link to recall view by moduleid.
         $search = "/(" . $base . "\/mod\/recall\/view.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@SMARTCARDSVIEWBYID*$2@$', $content);
+        $content = preg_replace($search, '$@RECALLVIEWBYID*$2@$', $content);
 
         return $content;
     }

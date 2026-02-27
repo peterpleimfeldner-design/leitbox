@@ -3,25 +3,22 @@ import os
 
 def create_zip():
     folder = r"c:\smartcards"
-    zip_path = r"C:\Users\peter\Desktop\smartcards.zip"
+    zip_path = r"C:\Users\peter\Desktop\recall_v1.zip"
     
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(folder):
-            # Exclude node_modules, .git, and any temporary packaging scripts
-            if 'node_modules' in root.split(os.sep):
-                continue
-            if '.git' in root.split(os.sep):
-                continue
-            
             for file in files:
-                if file == "zip_plugin.py": 
-                    continue # exclude the zipping script itself
-                    
+                if "node_modules" in root or ".git" in root or ".gemini" in root or file == "zip_plugin.py":
+                    continue
+                
                 file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, start=folder)
-                # Include the root directory "smartcards" directly inside the zip
-                arcname = "smartcards/" + arcname.replace('\\', '/')
+                arcname = os.path.relpath(file_path, folder)
+                
+                # Include the root directory "recall" directly inside the zip
+                arcname = "recall/" + arcname.replace('\\', '/')
                 zipf.write(file_path, arcname)
 
-create_zip()
-print("Plugin zipped successfully to C:\\Users\\peter\\Desktop\\smartcards.zip!")
+    print("Plugin zipped successfully to C:\\Users\\peter\\Desktop\\recall_v1.zip!")
+
+if __name__ == "__main__":
+    create_zip()
