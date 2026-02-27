@@ -105,7 +105,18 @@ class external extends external_api {
             shuffle($result);
         }
 
-        return $result;
+        // Always force the very first tutorial demo card to be strictly the first card if it's in this set
+        foreach ($result as $index => $c) {
+            if (strpos($c['question'], 'Willkommen bei Recall') !== false || strpos($c['question'], 'Welcome to Recall') !== false) {
+                // Move it to the very front of the array
+                $demo_card = $result[$index];
+                unset($result[$index]);
+                array_unshift($result, $demo_card);
+                break;
+            }
+        }
+
+        return array_values($result);
     }
 
     public static function get_cards_by_box_returns() {
