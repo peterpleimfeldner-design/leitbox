@@ -87,9 +87,16 @@ $string['addcard'] = 'Save Card';
 $string['updatecard'] = 'Save changes';
 $string['cardadded'] = 'Card added successfully.';
 $string['cardupdated'] = 'Card updated successfully.';
-$string['cancel'] = 'Cancel';
+$string['carddeleted'] = 'Card deleted.';
+$string['cardsdeleted'] = 'Successfully deleted {$a} cards.';
+$string['deleteselected'] = 'Delete selected';
+$string['confirmbulkdelete'] = 'Are you sure you want to delete the selected cards? This action cannot be undone.';
+$string['error_limit_reached'] = 'Limit reached: For didactic reasons, a maximum of 200 cards per set is allowed.';
+$string['error_limit_exceeded_import'] = 'Import failed: The limit of 200 cards would be exceeded. You can only add {$a} more cards to this set.';
+$string['didactic_limit_notice'] = '<strong>Learning Tip:</strong> To ensure optimal learning success and avoid cognitive overload, each activity is limited to <strong>200 cards</strong>. For larger topics, we highly recommend splitting the material across multiple Recall activities (e.g., "Chapter 1", "Chapter 2") in your course.';
 $string['bulkimport'] = 'Bulk Import (AI / Text)';
 $string['bulkimportdesc'] = 'Paste a formatted text block to import multiple cards at once.';
+$string['exportcards'] = 'Export cards (.txt)';
 $string['prompt_instruction'] = 'Copy this prompt and use it with ChatGPT/Claude to generate cards from your material:';
 $string['prompt_template'] = 'Create flashcards from the following text for studying. 
 Format each card EXACTLY like this, with no markdown (no asterisks, no hashes), and separate all cards with ===CARD===. 

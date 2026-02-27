@@ -64,7 +64,48 @@ if ($action === 'delete' && $cardid && confirm_sesskey()) {
     redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]), get_string('carddeleted', 'mod_recall'));
 }
 
+if ($action === 'bulkdelete' && data_submitted() && confirm_sesskey()) {
+    $cardids = optional_param_array('cardids', [], PARAM_INT);
+    if (!empty($cardids)) {
+        list($in, $params) = $DB->get_in_or_equal($cardids);
+        
+        // Double check they belong to this recall instance
+        $params[] = $recall->id;
+        $valid_cards = $DB->get_fieldset_sql("SELECT id FROM {recall_cards} WHERE id $in AND recallid = ?", $params);
+        
+        if (!empty($valid_cards)) {
+            list($in_valid, $params_valid) = $DB->get_in_or_equal($valid_cards);
+            $DB->delete_records_select('recall_progress', "cardid $in_valid", $params_valid);
+            $DB->delete_records_select('recall_cards', "id $in_valid", $params_valid);
+        }
+    }
+    redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]), get_string('cardsdeleted', 'mod_recall', count($valid_cards)));
+}
+
+if ($action === 'export' && confirm_sesskey()) {
+    $cards = $DB->get_records('recall_cards', ['recallid' => $recall->id], 'id ASC');
+    $export_content = "";
+    foreach ($cards as $c) {
+        $export_content .= "===CARD===\n";
+        $export_content .= "Q: " . $c->question . "\n";
+        $export_content .= "A: " . $c->answer . "\n";
+        if (!empty($c->hint)) {
+            $export_content .= "H: " . $c->hint . "\n";
+        }
+        $export_content .= "\n";
+    }
+    
+    $filename = clean_filename($recall->name) . '_export.txt';
+    send_file($export_content, $filename, 0, 0, true, true, 'text/plain');
+    die();
+}
+
 if ($action === 'add' && data_submitted() && confirm_sesskey()) {
+    $current_count = $DB->count_records('recall_cards', ['recallid' => $recall->id]);
+    if ($current_count >= 200) {
+        redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]), get_string('error_limit_reached', 'mod_recall'), null, \core\output\notification::NOTIFY_ERROR);
+    }
+
     $q = required_param('question', PARAM_RAW);
     $a = required_param('answer', PARAM_RAW);
     $h = optional_param('hint', '', PARAM_RAW);
@@ -107,6 +148,13 @@ if ($action === 'import' && data_submitted() && confirm_sesskey()) {
     $importtext = required_param('importdata', PARAM_RAW);
     $parsed_cards = \mod_recall\import_handler::parse_text($importtext);
     
+    $current_count = $DB->count_records('recall_cards', ['recallid' => $recall->id]);
+    $new_total = $current_count + count($parsed_cards);
+    
+    if ($new_total > 200) {
+        redirect(new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]), get_string('error_limit_exceeded_import', 'mod_recall', max(0, 200 - $current_count)), null, \core\output\notification::NOTIFY_ERROR);
+    }
+    
     if (!empty($parsed_cards)) {
         mod_recall_auto_delete_demos($recall->id);
     }
@@ -126,6 +174,9 @@ if ($action === 'import' && data_submitted() && confirm_sesskey()) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('managecards', 'mod_recall'));
+
+// Display didactic limit notice
+echo $OUTPUT->notification(get_string('didactic_limit_notice', 'mod_recall'), \core\output\notification::NOTIFY_INFO);
 
 // 1. Link back to activity
 echo html_writer::link(new moodle_url('/mod/recall/view.php', ['id' => $cm->id]), get_string('backtoactivity', 'mod_recall'), ['class' => 'btn btn-secondary mb-4']);
@@ -214,12 +265,22 @@ $cards = $DB->get_records('recall_cards', ['recallid' => $recall->id], 'id ASC',
 if ($cards) {
     echo $OUTPUT->paging_bar($totalcards, $page, $perpage, new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]));
     
+    // Form for bulk deletion
+    echo html_writer::start_tag('form', ['action' => 'manage.php', 'method' => 'post', 'id' => 'bulkdeleteform']);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'bulkdelete']);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+
     $table = new html_table();
-    $table->head = ['#', get_string('question', 'mod_recall'), get_string('answer', 'mod_recall'), get_string('hint', 'mod_recall'), get_string('actions')];
+    $table->head = [
+        '<input type="checkbox" id="selectallcards" title="'.get_string('selectall', 'moodle').'">',
+        '#', get_string('question', 'mod_recall'), get_string('answer', 'mod_recall'), get_string('hint', 'mod_recall'), get_string('actions')
+    ];
     $table->attributes['class'] = 'generaltable w-100';
 
     $rownum = ($page * $perpage) + 1;
     foreach ($cards as $c) {
+        $checkbox = '<input type="checkbox" name="cardids[]" value="'.$c->id.'" class="cardcheckbox">';
         $editurl = new moodle_url('/mod/recall/manage.php', ['id' => $cm->id, 'action' => 'edit', 'cardid' => $c->id]);
         $editbtn = html_writer::link($editurl, $OUTPUT->pix_icon('t/edit', get_string('edit')), ['class' => 'mr-2', 'style' => 'margin-right:8px;']);
 
@@ -227,6 +288,7 @@ if ($cards) {
         $delbtn = html_writer::link($delurl, $OUTPUT->pix_icon('t/delete', get_string('delete')), ['onclick' => 'return confirm("'.get_string('confirmdeletecard', 'mod_recall').'")']);
         
         $table->data[] = [
+            $checkbox,
             $rownum++,
             format_text($c->question),
             format_text($c->answer),
@@ -236,8 +298,35 @@ if ($cards) {
     }
     echo html_writer::table($table);
     
+    echo '<div class="mt-3">';
+    echo html_writer::empty_tag('input', [
+        'type' => 'submit', 
+        'value' => get_string('deleteselected', 'mod_recall'), 
+        'class' => 'btn btn-danger',
+        'onclick' => 'return confirm("'.get_string('confirmbulkdelete', 'mod_recall').'")'
+    ]);
+    echo '</div>';
+    
+    echo html_writer::end_tag('form');
+    
+    // Quick script to toggle all checkboxes
+    echo '<script>
+    document.getElementById("selectallcards").addEventListener("change", function(e) {
+        var checkboxes = document.querySelectorAll(".cardcheckbox");
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = e.target.checked;
+        }
+    });
+    </script>';
+    
     // Bottom paging bar for convenience
     echo $OUTPUT->paging_bar($totalcards, $page, $perpage, new moodle_url('/mod/recall/manage.php', ['id' => $cm->id]));
+    
+    // Export Button
+    $exporturl = new moodle_url('/mod/recall/manage.php', ['id' => $cm->id, 'action' => 'export', 'sesskey' => sesskey()]);
+    echo '<div class="mt-5 text-right">';
+    echo html_writer::link($exporturl, get_string('exportcards', 'mod_recall'), ['class' => 'btn btn-outline-secondary']);
+    echo '</div>';
 } else {
     echo html_writer::tag('p', get_string('nocards', 'mod_recall'));
 }

@@ -87,9 +87,16 @@ $string['addcard'] = 'Karte speichern';
 $string['updatecard'] = 'Änderungen speichern';
 $string['cardadded'] = 'Karte wurde erfolgreich hinzugefügt.';
 $string['cardupdated'] = 'Karte wurde erfolgreich aktualisiert.';
-$string['cancel'] = 'Abbrechen';
+$string['carddeleted'] = 'Karte gelöscht.';
+$string['cardsdeleted'] = '{$a} Karten erfolgreich gelöscht.';
+$string['deleteselected'] = 'Ausgewählte löschen';
+$string['confirmbulkdelete'] = 'Möchtest du die ausgewählten Karten wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.';
+$string['error_limit_reached'] = 'Limit erreicht: Aus didaktischen Gründen sind maximal 200 Karten pro Lern-Set erlaubt.';
+$string['error_limit_exceeded_import'] = 'Import fehlgeschlagen: Das Limit von 200 Karten würde überschritten werden. Du kannst noch maximal {$a} Karten zu diesem Set hinzufügen.';
+$string['didactic_limit_notice'] = '<strong>Lerntipp:</strong> Für den besten Lernerfolg und um Überforderung zu vermeiden, ist die Anzahl auf <strong>200 Karten pro Aktivität</strong> begrenzt. Bei umfangreicheren Themen empfehlen wir, den Stoff auf mehrere Recall-Aktivitäten (z.B. "Kapitel 1", "Kapitel 2") im Kurs aufzuteilen.';
 $string['bulkimport'] = 'Massen-Import (KI / Text)';
 $string['bulkimportdesc'] = 'Füge einen formatierten Textblock ein, um mehrere Karten auf einmal zu importieren.';
+$string['exportcards'] = 'Karten exportieren (.txt)';
 $string['prompt_instruction'] = 'Kopiere diesen Prompt und nutze ihn mit ChatGPT/Claude, um aus deinen Scripten Karten zu generieren:';
 $string['prompt_template'] = 'Erstelle aus folgendem Text Karteikarten zum Lernen. 
 Formatiere jede Karte EXAKT in diesem Format, ohne Abweichungen, ohne Markdown (keine Sternchen, keine Rauten) und trenne alle Karten mit ===CARD===. 
