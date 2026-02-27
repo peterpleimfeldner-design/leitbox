@@ -83,7 +83,7 @@ const FALLBACKS = {
     feedback_grand_title: 'Meisterwerk',
     feedback_grand_desc: 'Herzlichen Glückwunsch! Du hast alle Karten im System bis in den Experten-Stapel gebracht und zudem völlig fehlerfrei wiedergegeben. Du hast dieses Thema absolut verstanden!',
     feedback_perfect_title: 'Starkes Ergebnis',
-    feedback_perfect_desc: 'Du hast die meisten Inhalte korrekt ins Gedächtnis gerufen. Das Material sitzt.',
+    feedback_perfect_desc: 'Du hast alle Inhalte korrekt ins Gedächtnis gerufen. Das Material sitzt.',
     feedback_good_title: 'Solide Leistung',
     feedback_good_desc: 'Du hast einen guten Überblick. Die verbleibenden Lücken schließen sich mit der Zeit.',
     feedback_okay_title: 'Auf dem richtigen Weg',
