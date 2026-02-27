@@ -12,7 +12,7 @@
           <span class="w-2 h-2 rounded-full" :class="getDotClass(activeBox)"></span>
           {{ getBoxName(activeBox) }} 
           <span class="opacity-40 mx-1 font-normal">|</span> 
-          {{ getString('cardxofy_x') }} {{ currentCardIndex + 1 }} {{ getString('cardxofy_y') }} <span class="font-extrabold">{{ sessionCards.length }}</span>
+          {{ getString('cardxofy_x') }} {{ Math.min(currentCardIndex + 1, sessionCards.length) }} {{ getString('cardxofy_y') }} <span class="font-extrabold">{{ sessionCards.length }}</span>
         </div>
       </div>
 
@@ -24,11 +24,29 @@
         <p class="font-medium text-lg">{{ getString('loadingcards') }}</p>
       </div>
       
-      <div v-else-if="sessionCards.length === 0" class="text-center py-20 bg-white rounded-3xl shadow-md border border-slate-100 p-10 transform scale-105 transition-all">
-        <div class="text-6xl mb-6">🎉</div>
-        <h3 class="text-3xl font-extrabold text-slate-800 mb-3 tracking-tight">{{ getString('sessiondone') }}</h3>
-        <p class="text-slate-500 mb-8 max-w-sm mx-auto">{{ getString('sessiondonedesc') }}</p>
-        <button @click="endSession" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+      <div v-else-if="sessionFinished" class="text-center py-12 bg-white rounded-3xl shadow-md border border-slate-100 p-8 transform transition-all max-w-lg mx-auto">
+        <div class="text-6xl mb-4">{{ getSessionFeedback().emoji }}</div>
+        <h3 class="text-2xl font-extrabold text-slate-800 mb-2 tracking-tight">{{ getSessionFeedback().title }}</h3>
+        <p class="text-slate-500 mb-8">{{ getSessionFeedback().desc }}</p>
+        
+        <!-- Stats visual block -->
+        <div class="mb-10 w-full mt-4">
+            <div class="flex justify-between text-sm font-bold text-slate-600 mb-2 px-1">
+               <span>{{ sessionCards.length }} {{ getString('cards') }}</span>
+            </div>
+            <div class="w-full flex h-4 rounded-full overflow-hidden shadow-inner bg-slate-100 mb-3">
+               <div v-if="sessionStats.known > 0" :style="{ width: (sessionStats.known / sessionCards.length * 100) + '%' }" class="bg-emerald-400" :title="getString('known_btn')"></div>
+               <div v-if="sessionStats.again > 0" :style="{ width: (sessionStats.again / sessionCards.length * 100) + '%' }" class="bg-amber-400" :title="getString('again_btn')"></div>
+               <div v-if="sessionStats.hard > 0" :style="{ width: (sessionStats.hard / sessionCards.length * 100) + '%' }" class="bg-red-400" :title="getString('hard_btn')"></div>
+            </div>
+            <div class="flex justify-center flex-wrap gap-4 mt-1 text-xs font-semibold text-slate-600">
+               <div v-if="sessionStats.known > 0" class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> {{ sessionStats.known }} {{ getString('known_btn') }}</div>
+               <div v-if="sessionStats.again > 0" class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> {{ sessionStats.again }} {{ getString('again_btn') }}</div>
+               <div v-if="sessionStats.hard > 0" class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-400"></span> {{ sessionStats.hard }} {{ getString('hard_btn') }}</div>
+            </div>
+        </div>
+
+        <button @click="endSession" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 w-full">
           {{ getString('backtodashboard') }}
         </button>
       </div>
@@ -39,8 +57,8 @@
         </Transition>
       </div>
       
-      <!-- Progress Bar -->
-      <div v-if="!loading && sessionCards.length > 0" class="mt-14 max-w-md mx-auto relative group">
+      <!-- Progress Bar (Hide during finished screen) -->
+      <div v-if="!loading && !sessionFinished && sessionCards.length > 0" class="mt-14 max-w-md mx-auto relative group">
         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden shadow-inner">
           <div class="bg-gradient-to-r from-indigo-400 to-violet-500 h-2 rounded-full transition-all duration-500 ease-out" :style="{ width: `${progressPercentage}%` }"></div>
         </div>
@@ -67,10 +85,12 @@ const getString = (key) => {
 };
 
 const sessionActive = ref(false);
+const sessionFinished = ref(false);
 const activeBox = ref(null);
 const loading = ref(false);
 const sessionCards = ref([]);
 const currentCardIndex = ref(0);
+const sessionStats = ref({ known: 0, again: 0, hard: 0 });
 
 const currentCard = computed(() => sessionCards.value[currentCardIndex.value]);
 
@@ -78,6 +98,24 @@ const progressPercentage = computed(() => {
     if (sessionCards.value.length === 0) return 100;
     return (currentCardIndex.value / sessionCards.value.length) * 100;
 });
+
+const getSessionFeedback = () => {
+    const total = sessionCards.value.length;
+    if (total === 0) return { emoji: '🎉', title: getString('sessiondone'), desc: getString('sessiondonedesc') };
+    
+    // Weight calculation to determine performance
+    const score = (sessionStats.value.known + (sessionStats.value.again * 0.5)) / total;
+    
+    if (score >= 0.9) {
+        return { emoji: '🏆', title: getString('feedback_perfect_title'), desc: getString('feedback_perfect_desc') };
+    } else if (score >= 0.7) {
+        return { emoji: '🌟', title: getString('feedback_good_title'), desc: getString('feedback_good_desc') };
+    } else if (score >= 0.4) {
+        return { emoji: '👍', title: getString('feedback_okay_title'), desc: getString('feedback_okay_desc') };
+    } else {
+        return { emoji: '💪', title: getString('feedback_learn_title'), desc: getString('feedback_learn_desc') };
+    }
+};
 
 const getBadgeClass = (box) => {
     const classes = [
@@ -103,8 +141,10 @@ const getBoxName = (box) => {
 const handleStartSession = async (boxnumber) => {
     activeBox.value = boxnumber;
     sessionActive.value = true;
+    sessionFinished.value = false;
     loading.value = true;
     currentCardIndex.value = 0;
+    sessionStats.value = { known: 0, again: 0, hard: 0 };
     try {
         sessionCards.value = await getCardsByBox(boxnumber);
     } catch (e) {
@@ -119,6 +159,10 @@ const handleStartSession = async (boxnumber) => {
 const handleRate = async (rating) => {
     if (!currentCard.value) return;
     
+    if (rating === 0) sessionStats.value.hard++;
+    else if (rating === 1) sessionStats.value.again++;
+    else if (rating === 2) sessionStats.value.known++;
+
     // Fire and forget answer submission to Moodle API
     submitAnswer(currentCard.value.id, rating).catch(e => {
         console.error("Failed to save answer for card", currentCard.value.id, e);
@@ -131,15 +175,17 @@ const handleRate = async (rating) => {
         // Session complete
         currentCardIndex.value++; // triggers 100% progress momentarily
         setTimeout(() => {
-            sessionCards.value = [];
+            sessionFinished.value = true;
         }, 500);
     }
 };
 
 const endSession = () => {
     sessionActive.value = false;
+    sessionFinished.value = false;
     sessionCards.value = [];
     activeBox.value = null;
+    sessionStats.value = { known: 0, again: 0, hard: 0 };
 };
 </script>
 
