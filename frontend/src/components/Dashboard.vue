@@ -545,6 +545,9 @@ const doReset = async () => {
   flex: 1 1 auto;
   overscroll-behavior: contain;
 }
+.rc-modal-footer {
+  flex-shrink: 0;
+}
 .rc-modal-px { padding-left: 30px; padding-right: 30px; }
 .rc-modal-pt { padding-top: 32px; flex-shrink: 0; }
 .rc-modal-pb { padding-bottom: 32px; flex-shrink: 0; }
