@@ -254,6 +254,13 @@ class external extends external_api {
 
         $DB->update_record('leitbox_progress', $progress);
 
+        // Trigger Moodle's completion API to re-evaluate conditions
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+        $completion = new \completion_info($course);
+        if ($completion->is_enabled($cm) && $cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
+            $completion->update_state($cm, COMPLETION_COMPLETE, $userid);
+        }
+
         return [
             'success' => true,
             'new_box' => $progress->box_number
