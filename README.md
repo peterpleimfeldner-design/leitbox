@@ -10,12 +10,15 @@ Teachers can easily manage flashcards manually or import them in bulk using AI-g
 
 ## Core Features & Benefits
 
-- **Smart Leitner System:** Cards are organized into 5 learning boxes (Einsteiger, Lernender, Fortgeschritten, Erfahren, Experte). The system dynamically adjusts review intervals based on user feedback.
-- **Pedagogically Optimized:** When a card is forgotten (marked as "Hard"), it does not frustratingly reset to the beginning but shifts back by just one box, maintaining student motivation.
-- **Premium UI/UX:** Built with Vue.js 3 and Tailwind CSS. Features psycholoigcally aligned pastel colors, micro-animations, and a completely seamless, reload-free experience.
+- **Smart Leitner System:** Cards are organized into 6 learning boxes (New, Beginner, Learner, Advanced, Experienced, Expert). The system dynamically adjusts review intervals based on user feedback.
+- **Pedagogically Optimized:** When a card is forgotten (marked as "Hard"), it does not frustratingly reset to the beginning but shifts back by just one box, maintaining student motivation. A didactic limit of 200 cards per set ensures focused, effective learning.
+- **Premium UI/UX:** Built with Vue.js 3 and Tailwind CSS. Features psychologically aligned pastel colors, micro-animations, and a completely seamless, reload-free experience.
+- **AI Prompt Templates:** 6 built-in prompt templates (Standard Q&A, True/False, Vocabulary, Fill-in-the-blank, Jeopardy, Transfer & Everyday Context) for generating flashcard decks with any AI. Select, copy, and paste.
+- **Bulk Card Management:** Checkbox-powered multi-select for bulk deletion, plus a one-click export of all cards as a re-importable `.txt` file.
 - **WCAG 2.1 AA Compliant:** Fully accessible interface with comprehensive screen reader support, keyboard navigation, and high-contrast fallbacks.
+- **Full Internationalization:** Complete German and English language packs with no hardcoded strings. All UI elements, prompts, feedback messages, and explanations adapt to the user's Moodle language.
 - **Learning Progress Reset:** A built-in user-facing reset feature allows students to safely restart their learning journey before exams.
-- **AI Bulk Import:** Teachers can paste simple text structures (e.g., from ChatGPT) to instantly generate complete flashcard decks.
+- **Session Feedback:** Dynamic performance feedback after completing a deck, with 5 graduated levels from "Review recommended" to "Masterpiece".
 
 ## Requirements
 

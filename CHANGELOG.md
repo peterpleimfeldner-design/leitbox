@@ -2,6 +2,29 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.2.0] - 2026-02-28 (Kartenverwaltung & KI-Prompt Update)
+
+### Hinzugefügt
+- **KI-Prompt-Vorlagenauswahl:** 6 verschiedene Prompt-Templates (Standard, Wahr/Falsch, Vokabeln, Lückentext, Jeopardy, Transfer & Alltagsbezug) per Dropdown auswählbar. Der gewählte Prompt wird live im Vorschaufenster angezeigt und kann direkt kopiert werden.
+- **Massenauswahl & Bulk-Delete:** Checkbox-System mit „Alle auswählen"-Funktion zum gleichzeitigen Löschen mehrerer Karten.
+- **Kartenexport (.txt):** Exportfunktion, die alle Karten im nativen `===CARD===`-Format als Textdatei herunterlädt (reimportfähig).
+- **Didaktisches Kartenlimit:** Hartes Limit von 200 Karten pro Aktivität mit erklärendem Hinweis. Server-seitig für Einzelkarten und Massenimport erzwungen.
+- **Session-Feedback-Übersetzungen:** Alle 10 Feedback-Texte (Meisterwerk, Starkes Ergebnis, etc.) sind jetzt vollständig in Deutsch und Englisch verfügbar.
+- **Fortschrittsbalken-Übersetzung:** Der Fortschrittstext und sein barrierefreies aria-label sind jetzt korrekt internationalisiert.
+
+### Geändert
+- **Plugin-Name vereinfacht:** Von „Recall Aktivität" zu „Recall" – konsistent mit Moodle-Namenskonventionen (Forum, Glossar, etc.).
+- **Reset-Button:** Visuelle Umgestaltung von rot zu neutralem Grau für ein harmonischeres Dashboard-Layout.
+- **Header-Layout:** Logo/Titel links, Buttons rechts – bündige Ausrichtung mit dem Fortschrittsbalken darunter.
+- **KI-Prompt-Text:** Herstellerunabhängig formuliert („nutze ihn mit einer beliebigen KI" statt spezifischer Markennamen).
+
+### Behoben
+- **PHP Warning bei Bulk-Delete ohne Auswahl:** `Undefined variable $valid_cards` behoben, wenn „Ausgewählte löschen" ohne Checkbox-Auswahl geklickt wurde.
+- **Fehlender `cancel`-String:** Der „Abbrechen"-Button zeigte `[[cancel]]` statt des übersetzten Texts – Sprachstring wiederhergestellt.
+- **Hardcodierte deutsche Strings im Frontend:** Zwei Fortschrittstexte im Vue-Frontend waren nicht übersetzbar – durch `getString()` ersetzt.
+
+---
+
 ## [1.1.0] - 2026-02-28 (Feedback & Onboarding Update)
 
 ### Hinzugefügt
