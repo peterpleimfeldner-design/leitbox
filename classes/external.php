@@ -33,6 +33,67 @@ use external_multiple_structure;
 
 class external extends external_api {
 
+    public static function get_box_counts_parameters() {
+        return new external_function_parameters([
+            'instanceid' => new external_value(PARAM_INT, 'The recall instance id'),
+        ]);
+    }
+
+    public static function get_box_counts($instanceid) {
+        global $DB, $USER;
+        
+        $params = self::validate_parameters(self::get_box_counts_parameters(), [
+            'instanceid' => $instanceid,
+        ]);
+        
+        $cm = get_coursemodule_from_instance('recall', $params['instanceid']);
+        if (!$cm) {
+            throw new \moodle_exception('invalidcoursemodule');
+        }
+        $context = \context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/recall:view', $context);
+
+        $userid = $USER->id;
+        $results = [];
+
+        // Box 0: Cards with NO progress entry OR box_number = 0
+        $sql_new = "SELECT COUNT(*) AS cnt
+                      FROM {recall_cards} c
+                 LEFT JOIN {recall_progress} p ON c.id = p.cardid AND p.userid = :userid
+                     WHERE c.recallid = :instanceid
+                       AND (p.id IS NULL OR p.box_number = 0)";
+        $count_new = $DB->count_records_sql($sql_new, ['instanceid' => $params['instanceid'], 'userid' => $userid]);
+        if ($count_new > 0) {
+            $results[] = ['box_number' => 0, 'count' => $count_new];
+        }
+
+        // Boxes 1-5: Aggregate query
+        $sql_boxes = "SELECT p.box_number, COUNT(*) AS cnt
+                        FROM {recall_cards} c
+                        JOIN {recall_progress} p ON c.id = p.cardid
+                       WHERE c.recallid = :instanceid
+                         AND p.userid   = :userid
+                         AND p.box_number > 0
+                    GROUP BY p.box_number";
+        $box_counts = $DB->get_records_sql($sql_boxes, ['instanceid' => $params['instanceid'], 'userid' => $userid]);
+        
+        foreach ($box_counts as $box_number => $data) {
+            $results[] = ['box_number' => $box_number, 'count' => $data->cnt];
+        }
+
+        return $results;
+    }
+
+    public static function get_box_counts_returns() {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'box_number' => new external_value(PARAM_INT, 'The Leitner box number (0-5)'),
+                'count'      => new external_value(PARAM_INT, 'The number of cards in this box'),
+            ])
+        );
+    }
+
     public static function get_cards_by_box_parameters() {
         return new external_function_parameters([
             'instanceid' => new external_value(PARAM_INT, 'The recall instance id'),

@@ -22,6 +22,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
+    'mod_recall_get_box_counts' => array(
+        'classname' => 'mod_recall\external',
+        'methodname' => 'get_box_counts',
+        'classpath' => 'mod/recall/classes/external.php',
+        'description' => 'Get aggregated flashcard counts per Leitner box',
+        'type' => 'read',
+        'ajax' => true,
+    ),
     'mod_recall_get_cards_by_box' => array(
         'classname' => 'mod_recall\external',
         'methodname' => 'get_cards_by_box',
