@@ -2,6 +2,25 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.1] - 2026-03-01 (Completion Hotfix)
+
+### Behoben
+- **Abschlussverfolgung (Echtzeit):** Die Aktivität triggerte Moodles Abschluss-API (`update_state`) nicht korrekt live im AJAX-Backend. Die Abschlussprüfung wird nun nach jeder Karte sofort ausgelöst.
+- **Abschlussverfolgung (Anzeige):** Aufruf von `$completion->set_module_viewed($cm)` zur `view.php` hinzugefügt, sodass "Aktivität muss aufgerufen werden" ebenfalls zuverlässig erfüllt wird.
+
+---
+
+## [1.4.0] - 2026-03-01 (Rebranding & Custom Completion Update)
+
+### Geändert
+- **Komplette Umbenennung:** Der Plugin-Name wurde aufgrund von Namenskonflikten projektweit von "Recall" in "LeitBox" umgewandelt (Dateien, Variablen, Pfade, Language-Strings).
+- **Logos & Branding:** Einbau der neuen, zu 100% freigestellten transparenten PNG-Logos (`logo.png`, `icon.png`).
+
+### Hinzugefügt
+- **Neue Moodle-Abschlussbedingung ("Alle Karten gelernt"):** Lehrer können nun erzwingen, dass eine LeitBox-Aktivität erst dann den grünen Haken erhält, wenn der Schüler ausnahmslos *alle* Lernkarten erfolgreich in die Experten-Box (Box 5) befördert hat. Die Datenbank und Backupfunktionen wurden hierfür erweitert.
+
+---
+
 ## [1.3.1] - 2026-02-28 (Performance & Reliability Update)
 
 ### Geändert

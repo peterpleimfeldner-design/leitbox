@@ -46,6 +46,14 @@ Full support for Moodle's native Backup and Restore API is included. Course back
 - The ZIP root must contain EXACTLY ONE directory named `leitbox`.
 - Do not use names like `leitbox_v1.zip` or `plugin.zip`.
 
+## Versioning Standard (Semantic Versioning)
+
+This plugin strictly adheres to standard Semantic Versioning (`MAJOR.MINOR.PATCH`). Future AI tools or developers MUST follow this:
+- **MAJOR** increment (e.g., `1.x.x` to `2.0.0`): Fundamental architectural changes, framework rewrites, dropping legacy Moodle LTS support.
+- **MINOR** increment (e.g., `1.4.x` to `1.5.0`): New features (e.g., new completion rules, UI upgrades) or database schema upgrades (`install.xml`).
+- **PATCH** increment (e.g., `1.4.0` to `1.4.1`): Strict bugfixes, translation string corrections, or risk-free CSS tweaks.
+- Every release must be thoroughly documented in the `CHANGELOG.md` file!
+
 ## Links
 
 - **Documentation:** [GitHub Repository](https://github.com/peterpleimfeldner-design/leitbox)

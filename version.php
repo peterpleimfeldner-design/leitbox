@@ -21,6 +21,25 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * VERSIONING RULES (For Developers / AI Tooling):
+ * This plugin uses Semantic Versioning (MAJOR.MINOR.PATCH):
+ * 
+ * - MAJOR (e.g., 1.0.0 -> 2.0.0): 
+ *   Use for deep architectural changes, replacing frameworks, or formally 
+ *   dropping compatibility with older Moodle versions.
+ *
+ * - MINOR (e.g., 1.4.0 -> 1.5.0): 
+ *   Use for new features, new settings in the Moodle form (e.g., completion conditions), 
+ *   or structural database updates (XMLDB).
+ *
+ * - PATCH (e.g., 1.4.0 -> 1.4.1): 
+ *   Use strictly for bugfixes, language string corrections, minor CSS tweaks, 
+ *   or anything that carries zero architectural risk.
+ *
+ * EVERY release must be officially block-documented in CHANGELOG.md!
+ */
+
 $plugin->version   = 2026030102; // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112800; // Requires Moodle 4.1 (LTS).
 $plugin->component = 'mod_leitbox'; // Full name of the plugin (used for diagnostics).
