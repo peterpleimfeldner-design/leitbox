@@ -29,7 +29,7 @@ Teachers can easily manage flashcards manually or import them in bulk using AI-g
 
 1. Log in to your Moodle site as an administrator.
 2. Go to **Site administration** > **Plugins** > **Install plugins**.
-3. Upload the `leitbox_v1.zip` file and follow the onscreen instructions.
+3. Upload the latest `mod_leitbox_vX.Y.Z.zip` file and follow the onscreen instructions.
 4. Alternatively, extract the zip file directly into the `mod/leitbox` directory of your Moodle installation and trigger the upgrade via the browser (`/admin/index.php`) or CLI.
 
 ## Privacy & GDPR
@@ -39,6 +39,12 @@ LeitBox supports Moodle's native Privacy API. All student interaction data (prog
 ## Backup & Restore
 
 Full support for Moodle's native Backup and Restore API is included. Course backups will seamlessly include all flashcard decks and, optionally, student progress data.
+
+## Packaging Standard (Developers / AI Context)
+
+**CRITICAL RULE:** For Moodle plugin compliance, all source ZIPs submitted to the Moodle Plugins directory or distributed to clients MUST follow the exact format: `mod_leitbox_vX.Y.Z.zip` (e.g., `mod_leitbox_v1.4.0.zip`).
+- The ZIP root must contain EXACTLY ONE directory named `leitbox`.
+- Do not use names like `leitbox_v1.zip` or `plugin.zip`.
 
 ## Links
 
