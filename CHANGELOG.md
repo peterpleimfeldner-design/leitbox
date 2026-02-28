@@ -2,13 +2,14 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
-## [1.3.0] - 2026-02-28 (Performance & Reliability Update)
+## [1.3.1] - 2026-02-28 (Performance & Reliability Update)
 
 ### Geändert
 - **Performance (Dashboard Load):** Die `getBoxCounts` Funktion triggert nicht länger 6 parallele API-Aufrufe mit dem gesamten Kartendatenstrom. Ein neuer dedizierter, aggregierter REST-Endpunkt `mod_recall_get_box_counts` summiert die Karten serverseitig in Millisekunden und überträgt nur noch die 6 Zahlenwerte. Dies reduziert den Netzwerk-Payload bei 200 Karten um ca. 98%.
 
 ### Behoben
 - **Race-Condition bei Frontend-Übersetzungen:** Wenn Moodle beim Ladezyklus Strings blockierte oder nicht fand, zeigte die Ansicht leere Platzhalter wie `[[showhint]]`. Ein robustes Fallback-Dictionary (`FALLBACKS`) in `Card.vue` fängt dies nun verlässlich ab.
+- **Backup & Restore Link-Dekodierung:** Fehlende `RECALLINDEX` Decode-Rules in `restore_recall_activity_task.php` ergänzt, sodass in Kursen platzierte Links auf Flashcard-Decks bei der Wiederherstellung korrekt aufgelöst statt als `$@RECALLVIEWBYID*...` roh im Text stehengelassen werden. Abwärtskompatibilität für alte `SMARTCARDS`-Backups bleibt bestehen.
 
 ---
 

@@ -44,6 +44,10 @@ class restore_recall_activity_task extends restore_activity_task {
 
     static public function define_decode_rules() {
         $rules = [];
+        // New rules for Recall backups
+        $rules[] = new restore_decode_rule('RECALLINDEX', '/mod/recall/index.php?id=$1', 'course');
+        $rules[] = new restore_decode_rule('RECALLVIEWBYID', '/mod/recall/view.php?id=$1', 'course_module');
+        // Old rules for compatibility with pre-v1.0.0 Smartcards backups
         $rules[] = new restore_decode_rule('SMARTCARDSINDEX', '/mod/recall/index.php?id=$1', 'course');
         $rules[] = new restore_decode_rule('SMARTCARDSVIEWBYID', '/mod/recall/view.php?id=$1', 'course_module');
         return $rules;
