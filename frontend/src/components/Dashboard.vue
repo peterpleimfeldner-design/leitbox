@@ -4,7 +4,7 @@
     <!-- ═══ HEADER ═══ -->
     <header class="rc-header" role="banner">
       <div class="rc-header-brand">
-        <img :src="getLogoUrl()" alt="Recall" class="rc-logo" />
+        <img :src="getLogoUrl()" alt="LeitBox" class="rc-logo" />
         <div class="rc-header-text">
           <h1 class="rc-title" style="margin-bottom: 4px;">{{ getString('dashboardtitle') }}</h1>
           <p class="rc-subtitle">{{ getString('dashboardsbtitle') }}</p>
