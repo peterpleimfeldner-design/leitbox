@@ -2,6 +2,21 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.5.0] - 2026-03-01 (Erste öffentliche Veröffentlichung – Moodle Marketplace)
+
+### Geändert
+- **Version:** Sprung von 1.4.33 auf 1.5.0 für die erste offizielle Einreichung im Moodle Plugin-Verzeichnis (Moodle Marketplace).
+- **Activity Completion:** Vollständig überarbeitetes und stabilisiertes Completion-System für Moodle 4.x:
+  - Nur aktive Completion-Regeln werden in `customdata` geschrieben (deaktivierte Regeln blockieren den Abschluss nicht mehr).
+  - Deaktivierte Regeln geben `COMPLETION_COMPLETE` zurück (keine blockierenden Fehler).
+  - `update_state` wird mit `COMPLETION_UNKNOWN` aufgerufen (zwingt Moodle zur Neuberechnung in beide Richtungen).
+  - `get_cm()` erhält immer die korrekte Course Module ID (kein Exception-Bug mehr).
+  - Hilfe-Icons (?) in der Completion-Einstellungsseite sind konsistent linksbündig ausgerichtet.
+- **Sprache:** Alle Strings in DE und EN auf inklusive, didaktische Sprache aktualisiert ("Lernende" statt "Schüler/in").
+- **Completion-Logik:** `completion_min_cards` zählt nun Karten mit `box_number >= 1` (mindestens einmal grün bewertet) – nicht mehr alle Interaktionen.
+
+---
+
 ## [1.4.33] - 2026-03-01 (Sprachbereinigung & Completion-Audit)
 
 ### Geändert
