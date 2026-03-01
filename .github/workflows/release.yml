@@ -1,0 +1,44 @@
+name: Build and Release Moodle Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build_release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: Build Vue Frontend
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm run build
+          
+      - name: Prepare Plugin Directory
+        run: |
+          mkdir leitbox
+          rsync -av --progress . ./leitbox --exclude leitbox --exclude frontend --exclude .git --exclude .github --exclude .gitignore --exclude .gitattributes --exclude test_completion.php --exclude '.claude'
+          
+      - name: Create ZIP Archive
+        run: |
+          zip -r mod_leitbox_${{ github.ref_name }}.zip leitbox/
+          
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: mod_leitbox_${{ github.ref_name }}.zip
+          generate_release_notes: true
