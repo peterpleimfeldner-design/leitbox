@@ -133,44 +133,41 @@ function leitbox_supports($feature) {
 }
 
 /**
- * THIS IS THE CRITICAL MISSING PIECE.
+ * Called by Moodle to get module info for course display.
+ * This is the OFFICIAL Moodle 4 mechanism to inject custom completion rules
+ * into the cm_info cache's customdata array.
  *
- * Moodle calls leitbox_cm_info_static() to populate cm_info->customdata with
- * this instance's active completion rules. The custom_completion class then
- * reads $this->cm->customdata['customcompletionrules'] to know which rules are
- * actually enabled for THIS instance.
- *
- * Without this callback, Moodle has no idea which rules are configured, and
- * the completion system behaves unpredictably — typically treating every rule
- * as either always-active or always-satisfied.
- *
- * @param cm_info $cm
+ * @param stdClass $coursemodule
+ * @return cached_cm_info
  */
-function leitbox_cm_info_static(cm_info $cm) {
+function leitbox_get_coursemodule_info($coursemodule) {
     global $DB;
 
-    $leitbox = $DB->get_record('leitbox', ['id' => $cm->instance], 
-        'id, completion_min_cards, completion_min_mastered, completion_all_mastered');
+    $result = new cached_cm_info();
 
-    if (!$leitbox) {
-        return;
-    }
+    // Only inject rules if automatic completion is configured in the form
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $leitbox = $DB->get_record('leitbox', ['id' => $coursemodule->instance], 
+            'id, completion_min_cards, completion_min_mastered, completion_all_mastered');
 
-    // Build the customcompletionrules array — only include rules that are
-    // actually configured (non-zero). Moodle uses this to know which rules
-    // are active for this specific module instance.
-    $rules = [];
-    if (!empty($leitbox->completion_min_cards)) {
-        $rules['completion_min_cards'] = (int)$leitbox->completion_min_cards;
+        if ($leitbox) {
+            $rules = [];
+            if (!empty($leitbox->completion_min_cards)) {
+                $rules['completion_min_cards'] = (int)$leitbox->completion_min_cards;
+            }
+            if (!empty($leitbox->completion_min_mastered)) {
+                $rules['completion_min_mastered'] = (int)$leitbox->completion_min_mastered;
+            }
+            if (!empty($leitbox->completion_all_mastered)) {
+                $rules['completion_all_mastered'] = 1;
+            }
+            
+            // Critical: Custom completion system expects rules to live precisely here:
+            $result->customdata['customcompletionrules'] = $rules;
+        }
     }
-    if (!empty($leitbox->completion_min_mastered)) {
-        $rules['completion_min_mastered'] = (int)$leitbox->completion_min_mastered;
-    }
-    if (!empty($leitbox->completion_all_mastered)) {
-        $rules['completion_all_mastered'] = 1;
-    }
-
-    $cm->set_customdata(['customcompletionrules' => $rules]);
+    
+    return $result;
 }
 
 /**

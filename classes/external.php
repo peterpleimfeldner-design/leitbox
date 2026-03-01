@@ -213,10 +213,15 @@ class external extends external_api {
 
         // Security check: get card and ensure it exists and user can access its module.
         $card = $DB->get_record('leitbox_cards', ['id' => $params['cardid']], '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('leitbox', $card->leitboxid);
-        if (!$cm) {
+        $leitbox = $DB->get_record('leitbox', ['id' => $card->leitboxid], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $leitbox->course], '*', MUST_EXIST);
+        
+        $modinfo = get_fast_modinfo($course);
+        $cms = $modinfo->get_instances_of('leitbox');
+        if (!isset($cms[$leitbox->id])) {
             throw new \moodle_exception('invalidcoursemodule');
         }
+        $cm = $cms[$leitbox->id];
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/leitbox:view', $context);
@@ -259,7 +264,6 @@ class external extends external_api {
         $DB->update_record('leitbox_progress', $progress);
 
         // Trigger Moodle's completion API to re-evaluate conditions
-        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $completion = new \completion_info($course);
         if ($completion->is_enabled($cm) && $cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
             $completion->update_state($cm, COMPLETION_UNKNOWN, $userid);
@@ -291,10 +295,15 @@ class external extends external_api {
             'instanceid' => $instanceid,
         ]);
 
-        $cm = get_coursemodule_from_instance('leitbox', $params['instanceid']);
-        if (!$cm) {
+        $leitbox = $DB->get_record('leitbox', ['id' => $params['instanceid']], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $leitbox->course], '*', MUST_EXIST);
+        
+        $modinfo = get_fast_modinfo($course);
+        $cms = $modinfo->get_instances_of('leitbox');
+        if (!isset($cms[$leitbox->id])) {
             throw new \moodle_exception('invalidcoursemodule');
         }
+        $cm = $cms[$leitbox->id];
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/leitbox:view', $context);

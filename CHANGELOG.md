@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.23] - 2026-03-01 (Moodle 4.x Completion State Fix)
+
+### Behoben
+- **Activity Completion (Critical):** Fixes a Moodle 4 completion state update race condition where custom rules were lost during answering/resetting cards:
+  - `lib.php`: Ersetzt `leitbox_cm_info_static` durch die offiziell vorgesehene Moodle-Schnittstelle `leitbox_get_coursemodule_info`, um `cached_cm_info` korrekt mit dem `customdata` Array für Completion abzufüllen.
+  - `classes/external.php`: Ersetzt veraltete `get_coursemodule_from_instance` Aufrufe durch `get_fast_modinfo`, damit `update_state` mit korrekten `cm_info` Objektklassen versorgt wird anstatt mit leeren Standard-Objekten.
+
+---
+
 ## [1.4.22] - 2026-03-01 (Ultimate Moodle 4.x Completion Fixes)
 
 ### Behoben
