@@ -16,10 +16,14 @@
     object-fit: contain !important;
 }
 
-/* Completion form: help icons linksbündig / left-aligned */
+/* Completion form: help icons linksbündig / left-aligned
+ * Targets both addGroup-based rules (fgroup_id_*) and
+ * standalone checkbox rules (fitem_id_*) in the completion section. */
 #page-course-modedit .completion-rule .form-group .helptooltip,
+#page-course-modedit [id*="fgroup_id_completion"] .helptooltip,
+#page-course-modedit [id*="fitem_id_completion"] .helptooltip,
 .completion-rule .helptooltip {
-    float: left;
+    float: left !important;
     margin-right: 8px;
     margin-left: 0;
 }
