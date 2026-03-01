@@ -35,11 +35,11 @@ $string['completion_min_cards_help'] = 'Eine Karte gilt als "richtig beantwortet
 
 $string['completion_min_mastered'] = 'Gelernte Karten (Box 5)';
 $string['completion_min_mastered_desc'] = 'Mindestanzahl an Karten, die die letzte Box (Gelernt) erreichen müssen:';
-$string['completion_min_mastered_help'] = 'Die Anzahl an Karten, die durch korrekte Antworten befördert werden müssen, damit die Aktivität als bestanden gilt.';
+$string['completion_min_mastered_help'] = 'Gibt an, wie viele Karten Lernende in die letzte Box (Experten-Stapel) befördern müssen. Wichtig: Dieser Wert darf die Gesamtzahl der Karten in der Aktivität nicht überschreiten – andernfalls ist der Abschluss unerreichbar.';
 
 $string['completion_all_mastered'] = 'Alle Karten gelernt';
-$string['completion_all_mastered_desc'] = 'Schüler muss ALLE Karten fehlerfrei meistern (Alle Karten in den Experten-Stapel befördern)';
-$string['completion_all_mastered_help'] = 'Wenn aktiviert, gilt diese Aktivität erst als abgeschlossen, wenn der/die Schüler/in restlos alle importierten Karten in die finale Experten-Box bewegt hat.';
+$string['completion_all_mastered_desc'] = 'Lernende müssen ALLE Karten fehlerfrei meistern (alle Karten in den Experten-Stapel befördern)';
+$string['completion_all_mastered_help'] = 'Wenn aktiviert, gilt diese Aktivität erst als abgeschlossen, wenn Lernende restlos alle importierten Karten in die finale Experten-Box bewegt haben.';
 
 $string['box0'] = 'Neu';
 $string['box1'] = 'Einsteiger';
