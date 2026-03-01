@@ -2,6 +2,17 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.5.2] - 2026-03-01 (Moodle Marketplace: Zeilenenden & Icon)
+
+### Behoben
+- **Zeilenenden (CRLF → LF):** `.gitattributes` Datei hinzugefügt, die für alle PHP-, XML-, CSS-, JS- und Markdown-Dateien zwingend LF-Zeilenenden (`\n`) vorschreibt. Ohne diese Korrektur konnte der Moodle Marketplace-Validator `version.php`, `lib.php` und die Sprachdateien nicht korrekt parsen, weil er Linux-Tools verwendet.
+- **Alle Textdateien renormalisiert:** `git add --renormalize` hat alle bestehenden CRLF-Dateien im Repository in LF konvertiert.
+
+### Hinzugefügt
+- **`pix/icon.svg`:** SVG-Icon für den Moodle Marketplace ergänzt. Der Marketplace bevorzugt Vektor-Icons gegenüber PNG.
+
+---
+
 ## [1.5.1] - 2026-03-01 (Moodle Marketplace Fix)
 
 ### Hinzugefügt
