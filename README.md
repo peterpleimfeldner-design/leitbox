@@ -58,6 +58,7 @@ This plugin strictly adheres to standard Semantic Versioning (`MAJOR.MINOR.PATCH
 
 - **Documentation:** [GitHub Repository](https://github.com/peterpleimfeldner-design/leitbox)
 - **Bug tracker:** [GitHub Issues](https://github.com/peterpleimfeldner-design/leitbox/issues)
+- **Support & Contact:** leitbox.moodle@gmail.com
 
 ## License
 

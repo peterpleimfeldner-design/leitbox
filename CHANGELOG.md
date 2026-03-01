@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.16] - 2026-03-01 (Support Email Integration)
+
+### Hinzugefügt
+- **Kontakt & Support:** Die offizielle Support-E-Mail-Adresse (`leitbox.moodle@gmail.com`) wurde in die grundlegenden Projektdokumente (README, Marketing-Materialien, Code-Header) integriert, um eine zentrale Anlaufstelle für Anfragen und Bug-Reports zu etablieren.
+
+---
+
 ## [1.4.15] - 2026-03-01 (Wording Refinement English Translation)
 
 ### Geändert

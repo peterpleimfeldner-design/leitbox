@@ -17,6 +17,7 @@
 /**
  * @package   mod_leitbox
  * @copyright 2026 Peter Pleimfeldner
+ * @contact   leitbox.moodle@gmail.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -40,9 +41,9 @@ defined('MOODLE_INTERNAL') || die();
  * EVERY release must be officially block-documented in CHANGELOG.md!
  */
 
-$plugin->version   = 2026030116; // The current module version (Date: YYYYMMDDXX).
+$plugin->version   = 2026030117; // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112800; // Requires Moodle 4.1 (LTS).
 $plugin->component = 'mod_leitbox'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.4.15';
+$plugin->release   = '1.4.16';
 
