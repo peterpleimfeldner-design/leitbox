@@ -33,10 +33,6 @@ $string['completion_min_cards'] = 'Minimum cards answered correctly';
 $string['completion_min_cards_desc'] = 'Student must answer at least this many cards correctly at least once:';
 $string['completion_min_cards_help'] = 'A card counts as "correctly answered" once it has been rated green at least once and is in Box 1 or higher. Cards that were only rated red or yellow do not count.';
 
-$string['completion_min_correct'] = 'Cards answered correctly at least once';
-$string['completion_min_correct_desc'] = 'Students must answer at least this many cards correctly at least once:';
-$string['completion_min_correct_help'] = 'Each card counts only once – specifically the first time it is answered correctly. This value must not exceed the total number of cards in the activity, since each card can be counted at most once.';
-
 $string['completion_min_mastered'] = 'Mastered cards (Box 5)';
 $string['completion_min_mastered_desc'] = 'Minimum number of flashcards students must master (reach Box 5):';
 $string['completion_min_mastered_help'] = 'Specifies how many cards students must promote to the Expert deck (Box 5). Important: This value must not exceed the total number of cards in the activity – otherwise completion becomes unreachable.';
