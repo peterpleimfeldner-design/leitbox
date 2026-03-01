@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.15] - 2026-03-01 (Wording Refinement English Translation)
+
+### Geändert
+- **Sprachdateien (Englisch):** Die methodische und historische Richtigstellung im 'Wie funktioniert das?' Modal wurde nun auch für die internationale Version in `lang/en/leitbox.php` akkurat ins Englische übersetzt und übernommen.
+
+---
+
 ## [1.4.14] - 2026-03-01 (Wording Refinement)
 
 ### Geändert
