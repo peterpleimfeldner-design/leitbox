@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.17] - 2026-03-01 (Completion Data Preprocessing Fix)
+
+### Behoben
+- **Activity Completion (Bugfix):** Ein Fehler wurde behoben, durch den benutzerdefinierte Abschlussbedingungen (z.B. "Mindestens 6 Karten üben") beim Bearbeiten der Aktivität im Moodle-Formular nicht korrekt geladen und beim erneuten Speichern der Aktivität ungewollt auf `0` (deaktiviert) zurückgesetzt wurden. Dies führte dazu, dass die Aktivität bereits nach der ersten Karte fälschlicherweise als "Erledigt" markiert wurde. Die fehlende `data_preprocessing`-Methode wurde in der `mod_form.php` nachgepflegt.
+
+---
+
 ## [1.4.16] - 2026-03-01 (Support Email Integration)
 
 ### Hinzugefügt

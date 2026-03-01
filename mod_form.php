@@ -100,5 +100,21 @@ class mod_leitbox_mod_form extends moodleform_mod {
                (!empty($data['completion_min_mastered_enabled']) && $data['completion_min_mastered'] != 0) ||
                (!empty($data['completion_all_mastered']));
     }
+
+    public function data_preprocessing(&$default_values) {
+        if (isset($default_values['completion_min_cards'])) {
+            $default_values['completion_min_cards_enabled'] = $default_values['completion_min_cards'] > 0 ? 1 : 0;
+        } else {
+            $default_values['completion_min_cards_enabled'] = 0;
+            $default_values['completion_min_cards'] = 0;
+        }
+
+        if (isset($default_values['completion_min_mastered'])) {
+            $default_values['completion_min_mastered_enabled'] = $default_values['completion_min_mastered'] > 0 ? 1 : 0;
+        } else {
+            $default_values['completion_min_mastered_enabled'] = 0;
+            $default_values['completion_min_mastered'] = 0;
+        }
+    }
 }
 
