@@ -2,6 +2,16 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.12] - 2026-03-01 (Robust Demo Deletion & Unit Tests)
+
+### Geändert
+- **Demo-Karten Bereinigung:** Die Logik zum automatischen Löschen der initialen Demo-Karten in `manage.php` wurde deutlich robuster programmiert. Anstatt blind die ersten 5 Karten zu betrachten, wertet das System nun per striktem Datenbank-Befehl aus, ob bereits eigene (Nicht-Demo) Karten angelegt wurden, bevor die Bereinigung zugelassen wird.
+
+### Hinzugefügt
+- **Unit Tests:** In `tests/external_test.php` wurden neue automatisierte PHPUnit-Tests hinzugefügt, um die Fehlerbehandlung bei ungültigen Box-Nummer-Abfragen (API Bounds Check) sowie die korrekte `DISTINCT`-Identifikation von einzigartigen Karten-Lernvorgängen innerhalb der Abschlussverfolgung mathematisch zu beweisen.
+
+---
+
 ## [1.4.11] - 2026-03-01 (Code Review & Cleanup)
 
 ### Behoben

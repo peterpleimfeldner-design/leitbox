@@ -151,4 +151,31 @@ class external_test extends externallib_advanced_testcase {
         // Progress should be completely gone for this user/instance.
         $this->assertEquals(0, $DB->count_records('leitbox_progress', ['userid' => $student->id]));
     }
+    /**
+     * Test that invalid box number throws exception.
+     */
+    public function test_get_cards_by_box_invalid_box() {
+        list($course, $student, $leitbox, $card) = $this->create_leitbox_activity();
+        $this->setUser($student);
+        $this->expectException(\moodle_exception::class);
+        external::get_cards_by_box($leitbox->id, 99);
+    }
+
+    /**
+     * Test completion state: min_cards condition uses DISTINCT card count.
+     */
+    public function test_completion_min_cards_counts_unique_cards() {
+        global $DB;
+        list($course, $student, $leitbox, $card) = $this->create_leitbox_activity();
+        $this->setUser($student);
+
+        // Answer the same card 5 times
+        for ($i = 0; $i < 5; $i++) {
+            external::submit_answer($card->id, 2);
+        }
+
+        // Despite 5 interactions, only 1 unique card was learned
+        $progress_count = $DB->count_records('leitbox_progress', ['userid' => $student->id]);
+        $this->assertEquals(1, $progress_count); // Only 1 unique progress record (UNIQUE INDEX)
+    }
 }

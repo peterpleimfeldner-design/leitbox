@@ -44,16 +44,25 @@ $PAGE->set_context($context);
  */
 function mod_leitbox_auto_delete_demos($leitboxid) {
     global $DB;
-    $cards = $DB->get_records('leitbox_cards', ['leitboxid' => $leitboxid], 'id ASC');
-    if (count($cards) === 5) {
-        $first_card = reset($cards);
-        if ($first_card->category === 'demo') {
-            list($in, $params) = $DB->get_in_or_equal(array_keys($cards));
-            if (!empty($params)) {
-                 $DB->delete_records_select('leitbox_progress', "cardid $in", $params);
-            }
-            $DB->delete_records('leitbox_cards', ['leitboxid' => $leitboxid]);
-        }
+    // Only auto-delete if NO custom (non-demo) cards exist yet
+    $custom_count = $DB->count_records_select(
+        'leitbox_cards',
+        "leitboxid = ? AND (category IS NULL OR category != 'demo')",
+        [$leitboxid]
+    );
+    if ($custom_count > 0) {
+        return; // Custom cards already exist, don't touch anything
+    }
+    // Delete all remaining demo cards and their progress
+    $demo_ids = $DB->get_fieldset_select(
+        'leitbox_cards', 'id',
+        "leitboxid = ? AND category = 'demo'",
+        [$leitboxid]
+    );
+    if (!empty($demo_ids)) {
+        list($in, $params) = $DB->get_in_or_equal($demo_ids);
+        $DB->delete_records_select('leitbox_progress', "cardid $in", $params);
+        $DB->delete_records_select('leitbox_cards', "id $in", $params);
     }
 }
 
