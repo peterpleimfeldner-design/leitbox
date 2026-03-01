@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.19] - 2026-03-01 (Moodle 4 Form UI Completion Fix)
+
+### Behoben
+- **Activity Completion (Bugfix):** Es wurde ein kritischer Fehler im Einstellungsformular in Moodle 4.0+ behoben. Weil die neuen numerischen Moodle-Regeln intern in einer `Checkbox-Gruppe` zusammengefasst waren, hat die Formular-Validierung fälschlicherweise beim Speichern "Keine Regeln aktiviert" an die Backend-Datenbank von Moodle gemeldet, selbst wenn ein Wert wie "10 Karten" eingetippt wurde. Die verwirrenden Checkboxen für numerische Werte wurden komplett entfernt. Ab sofort reicht es, native Moodle-Logik anzuwenden: Tippt man eine Zahl (`>0`) ein, ist die Regel automatisch aktiv! Ist das Feld leer oder `0`, ist die Regel deaktiviert.
+
+---
+
 ## [1.4.18] - 2026-03-01 (Moodle 4+ Completion Tracking Fix)
 
 ### Behoben

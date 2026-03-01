@@ -65,56 +65,40 @@ class mod_leitbox_mod_form extends moodleform_mod {
     public function add_completion_rules() {
         $mform = $this->_form;
 
-        $group = array();
-        $group[] = $mform->createElement('checkbox', 'completion_min_cards_enabled', '',
-            get_string('completion_min_cards_desc', 'mod_leitbox'));
-        $group[] = $mform->createElement('text', 'completion_min_cards', '', array('size' => 3));
-        
+        // 1. Min Cards Rule
+        $mform->addElement('text', 'completion_min_cards', get_string('completion_min_cards', 'mod_leitbox'), array('size' => 3));
         $mform->setType('completion_min_cards', PARAM_INT);
-        $mform->addGroup($group, 'completion_min_cards_group', get_string('completion_min_cards', 'mod_leitbox'), array(' '), false);
-        $mform->disabledIf('completion_min_cards', 'completion_min_cards_enabled', 'notchecked');
+        $mform->addHelpButton('completion_min_cards', 'completion_min_cards', 'mod_leitbox');
 
-        $group2 = array();
-        $group2[] = $mform->createElement('checkbox', 'completion_min_mastered_enabled', '',
-            get_string('completion_min_mastered_desc', 'mod_leitbox'));
-        $group2[] = $mform->createElement('text', 'completion_min_mastered', '', array('size' => 3));
-        
+        // 2. Min Mastered Rule
+        $mform->addElement('text', 'completion_min_mastered', get_string('completion_min_mastered', 'mod_leitbox'), array('size' => 3));
         $mform->setType('completion_min_mastered', PARAM_INT);
-        $mform->addGroup($group2, 'completion_min_mastered_group', get_string('completion_min_mastered', 'mod_leitbox'), array(' '), false);
-        $mform->disabledIf('completion_min_mastered', 'completion_min_mastered_enabled', 'notchecked');
+        $mform->addHelpButton('completion_min_mastered', 'completion_min_mastered', 'mod_leitbox');
 
+        // 3. All Mastered Rule
         $mform->addElement('checkbox', 'completion_all_mastered', 
             get_string('completion_all_mastered', 'mod_leitbox'),
             get_string('completion_all_mastered_desc', 'mod_leitbox'));
-
-
-        $mform->addHelpButton('completion_min_cards_group', 'completion_min_cards', 'mod_leitbox');
-        $mform->addHelpButton('completion_min_mastered_group', 'completion_min_mastered', 'mod_leitbox');
         $mform->addHelpButton('completion_all_mastered', 'completion_all_mastered', 'mod_leitbox');
 
-        return array('completion_min_cards_group', 'completion_min_mastered_group', 'completion_all_mastered');
+        return array('completion_min_cards', 'completion_min_mastered', 'completion_all_mastered');
     }
 
     public function completion_rule_enabled($data) {
-        return (!empty($data['completion_min_cards_enabled']) && $data['completion_min_cards'] != 0) ||
-               (!empty($data['completion_min_mastered_enabled']) && $data['completion_min_mastered'] != 0) ||
+        return (!empty($data['completion_min_cards']) && $data['completion_min_cards'] > 0) ||
+               (!empty($data['completion_min_mastered']) && $data['completion_min_mastered'] > 0) ||
                (!empty($data['completion_all_mastered']));
     }
 
     public function data_preprocessing(&$default_values) {
-        if (isset($default_values['completion_min_cards'])) {
-            $default_values['completion_min_cards_enabled'] = $default_values['completion_min_cards'] > 0 ? 1 : 0;
-        } else {
-            $default_values['completion_min_cards_enabled'] = 0;
+        if (!isset($default_values['completion_min_cards'])) {
             $default_values['completion_min_cards'] = 0;
         }
-
-        if (isset($default_values['completion_min_mastered'])) {
-            $default_values['completion_min_mastered_enabled'] = $default_values['completion_min_mastered'] > 0 ? 1 : 0;
-        } else {
-            $default_values['completion_min_mastered_enabled'] = 0;
+        if (!isset($default_values['completion_min_mastered'])) {
             $default_values['completion_min_mastered'] = 0;
+        }
+        if (!isset($default_values['completion_all_mastered'])) {
+            $default_values['completion_all_mastered'] = 0;
         }
     }
 }
-
