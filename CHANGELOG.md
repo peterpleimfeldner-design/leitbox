@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.5] - 2026-03-01 (Syntax Error Hotfix)
+
+### Behoben
+- **Server Error (PHP Parse Error):** Behebt einen fatalen Syntaxfehler (fehlende Array-Klammer `];`) in der `view.php`, der aus einem fehlerhaften automatischen Merge des Completion-Tracker-Updates resultierte und zum HTTP 500 Fehler führte.
+
+---
+
 ## [1.4.4] - 2026-03-01 (Moodle API Registration Fix)
 
 ### Behoben
