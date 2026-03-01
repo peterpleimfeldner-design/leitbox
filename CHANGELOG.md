@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.5.1] - 2026-03-01 (Moodle Marketplace Fix)
+
+### Hinzugefügt
+- **`index.php`:** Pflichtdatei für alle Moodle Activity Modules hinzugefügt. Listet alle LeitBox-Instanzen eines Kurses auf und ist für die Moodle Marketplace-Validierung zwingend erforderlich.
+
+---
+
 ## [1.5.0] - 2026-03-01 (Erste öffentliche Veröffentlichung – Moodle Marketplace)
 
 ### Geändert
