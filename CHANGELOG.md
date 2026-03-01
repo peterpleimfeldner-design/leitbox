@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.27] - 2026-03-01 (Moodle 4.x Completion String Fix)
+
+### Geändert
+- **Activity Completion (UX):** Anpassung der Sprach-Strings in `lang/de/leitbox.php`. Da die Regel für die minimale Anzahl nun korrekter- und gerechterweise *Evaluierungen* zählt anstatt *Karten* (dieselbe Karte mehrfach auf "Rot" zu klicken zählt als zusätzlicher Lerndurchgang), lautet die Einstellung nun didaktisch korrekt "Mindestanzahl Lerndurchgänge" statt "Minimale Anzahl zu übender Karten".
+
+---
+
 ## [1.4.26] - 2026-03-01 (Moodle 4.x Completion State Reset)
 
 ### Behoben
