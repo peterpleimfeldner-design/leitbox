@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 
 class mod_leitbox_mod_form extends moodleform_mod {
+
     public function definition() {
         global $CFG;
 
@@ -32,7 +33,7 @@ class mod_leitbox_mod_form extends moodleform_mod {
         // General section.
         $mform->addElement('header', 'general', get_string('general', 'form'));
         
-        $mform->addElement('text', 'name', get_string('leitboxname', 'mod_leitbox'), array('size'=>'64'));
+        $mform->addElement('text', 'name', get_string('leitboxname', 'mod_leitbox'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -43,115 +44,188 @@ class mod_leitbox_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements();
 
-        // Specific settings.
+        // Plugin-specific settings.
         $mform->addElement('header', 'leitboxfieldset', get_string('settings', 'mod_leitbox'));
 
-        $mform->addElement('select', 'cardorder', get_string('cardorder', 'mod_leitbox'), array(
+        $mform->addElement('select', 'cardorder', get_string('cardorder', 'mod_leitbox'), [
             0 => get_string('cardorder_random', 'mod_leitbox'),
-            1 => get_string('cardorder_sequential', 'mod_leitbox')
-        ));
+            1 => get_string('cardorder_sequential', 'mod_leitbox'),
+        ]);
         $mform->setDefault('cardorder', 0);
         $mform->addHelpButton('cardorder', 'cardorder', 'mod_leitbox');
 
-        // Settings are now handled by add_completion_rules()
-
-        // Standard course module elements.
+        // Completion rules are added by add_completion_rules() below.
         $this->standard_coursemodule_elements();
-
-        // Add standard buttons, common to all modules.
         $this->add_action_buttons();
     }
 
+    /**
+     * Add the custom completion rule form elements.
+     *
+     * Called by Moodle core when building the activity settings form.
+     * Must return an array of the top-level element names added here.
+     *
+     * @return array Names of the top-level form elements for these rules.
+     */
     public function add_completion_rules() {
-        $mform = $this->_form;
-        $suffix = method_exists($this, 'get_suffix') ? $this->get_suffix() : '';
+        $mform  = $this->_form;
 
-        // 1. Min Cards Rule
-        $group = array();
-        $completion_min_cards_enabled = 'completion_min_cards_enabled' . $suffix;
-        $completion_min_cards = 'completion_min_cards' . $suffix;
-        $completion_min_cards_group = 'completion_min_cards_group' . $suffix;
+        // Moodle 4.3+ uses a suffix system to avoid naming collisions when
+        // multiple instances of the same activity appear on one page.
+        $suffix = $this->get_suffix();
 
-        $group[] = $mform->createElement('checkbox', $completion_min_cards_enabled, '',
+        // ----------------------------------------------------------------
+        // Rule 1: Minimum number of unique cards practiced
+        // ----------------------------------------------------------------
+        $group1_name   = 'completion_min_cards_group' . $suffix;
+        $enabled1_name = 'completion_min_cards_enabled' . $suffix;
+        $value1_name   = 'completion_min_cards' . $suffix;
+
+        $group1 = [];
+        $group1[] = $mform->createElement('checkbox', $enabled1_name, '',
             get_string('completion_min_cards_desc', 'mod_leitbox'));
-        $group[] = $mform->createElement('text', $completion_min_cards, '', array('size' => 3));
-        $mform->setType($completion_min_cards, PARAM_INT);
-        $mform->addGroup($group, $completion_min_cards_group, get_string('completion_min_cards', 'mod_leitbox'), array(' '), false);
-        $mform->hideIf($completion_min_cards, $completion_min_cards_enabled, 'notchecked');
+        $group1[] = $mform->createElement('text', $value1_name, '', ['size' => 3]);
+        $mform->setType($value1_name, PARAM_INT);
 
-        // 2. Min Mastered Rule
-        $group2 = array();
-        $completion_min_mastered_enabled = 'completion_min_mastered_enabled' . $suffix;
-        $completion_min_mastered = 'completion_min_mastered' . $suffix;
-        $completion_min_mastered_group = 'completion_min_mastered_group' . $suffix;
+        $mform->addGroup($group1, $group1_name,
+            get_string('completion_min_cards', 'mod_leitbox'), [' '], false);
+        $mform->addHelpButton($group1_name, 'completion_min_cards', 'mod_leitbox');
+        $mform->hideIf($value1_name, $enabled1_name, 'notchecked');
 
-        $group2[] = $mform->createElement('checkbox', $completion_min_mastered_enabled, '',
+        // ----------------------------------------------------------------
+        // Rule 2: Minimum number of cards mastered (reached Box 5)
+        // ----------------------------------------------------------------
+        $group2_name   = 'completion_min_mastered_group' . $suffix;
+        $enabled2_name = 'completion_min_mastered_enabled' . $suffix;
+        $value2_name   = 'completion_min_mastered' . $suffix;
+
+        $group2 = [];
+        $group2[] = $mform->createElement('checkbox', $enabled2_name, '',
             get_string('completion_min_mastered_desc', 'mod_leitbox'));
-        $group2[] = $mform->createElement('text', $completion_min_mastered, '', array('size' => 3));
-        $mform->setType($completion_min_mastered, PARAM_INT);
-        $mform->addGroup($group2, $completion_min_mastered_group, get_string('completion_min_mastered', 'mod_leitbox'), array(' '), false);
-        $mform->hideIf($completion_min_mastered, $completion_min_mastered_enabled, 'notchecked');
+        $group2[] = $mform->createElement('text', $value2_name, '', ['size' => 3]);
+        $mform->setType($value2_name, PARAM_INT);
 
-        // 3. All Mastered Rule
-        $completion_all_mastered = 'completion_all_mastered' . $suffix;
-        $mform->addElement('checkbox', $completion_all_mastered, 
+        $mform->addGroup($group2, $group2_name,
+            get_string('completion_min_mastered', 'mod_leitbox'), [' '], false);
+        $mform->addHelpButton($group2_name, 'completion_min_mastered', 'mod_leitbox');
+        $mform->hideIf($value2_name, $enabled2_name, 'notchecked');
+
+        // ----------------------------------------------------------------
+        // Rule 3: ALL cards must be mastered (Box 5)
+        // ----------------------------------------------------------------
+        $all_name = 'completion_all_mastered' . $suffix;
+        $mform->addElement('checkbox', $all_name,
             get_string('completion_all_mastered', 'mod_leitbox'),
             get_string('completion_all_mastered_desc', 'mod_leitbox'));
+        $mform->addHelpButton($all_name, 'completion_all_mastered', 'mod_leitbox');
 
-        return array($completion_min_cards_group, $completion_min_mastered_group, $completion_all_mastered);
+        return [$group1_name, $group2_name, $all_name];
     }
 
+    /**
+     * Called during form validation to decide if at least one custom
+     * completion rule has been configured (so Moodle knows not to complain
+     * when automatic completion is selected but no standard grade/view
+     * condition is ticked).
+     *
+     * @param array $data Form data.
+     * @return bool True if at least one rule is enabled.
+     */
     public function completion_rule_enabled($data) {
-        $suffix = method_exists($this, 'get_suffix') ? $this->get_suffix() : '';
-        return (!empty($data['completion_min_cards_enabled' . $suffix]) && $data['completion_min_cards' . $suffix] > 0) ||
-               (!empty($data['completion_min_mastered_enabled' . $suffix]) && $data['completion_min_mastered' . $suffix] > 0) ||
-               (!empty($data['completion_all_mastered' . $suffix]));
+        $suffix = $this->get_suffix();
+
+        $min_cards_on   = !empty($data['completion_min_cards_enabled' . $suffix])
+                          && (int)($data['completion_min_cards' . $suffix] ?? 0) > 0;
+        $min_mastered_on = !empty($data['completion_min_mastered_enabled' . $suffix])
+                           && (int)($data['completion_min_mastered' . $suffix] ?? 0) > 0;
+        $all_mastered_on = !empty($data['completion_all_mastered' . $suffix]);
+
+        return $min_cards_on || $min_mastered_on || $all_mastered_on;
     }
 
+    /**
+     * Pre-populate the form when editing an existing activity.
+     *
+     * We need to set the "enabled" checkboxes based on whether the
+     * corresponding DB field has a non-zero value, so the UI correctly
+     * reflects the saved state.
+     *
+     * @param array $default_values Reference to the array of default values.
+     */
     public function data_preprocessing(&$default_values) {
-        $suffix = method_exists($this, 'get_suffix') ? $this->get_suffix() : '';
-        
-        $completion_min_cards = 'completion_min_cards' . $suffix;
-        $completion_min_cards_enabled = 'completion_min_cards_enabled' . $suffix;
-        if (empty($default_values[$completion_min_cards])) {
-            $default_values[$completion_min_cards] = 10;
-            $default_values[$completion_min_cards_enabled] = 0;
+        parent::data_preprocessing($default_values);
+        $suffix = $this->get_suffix();
+
+        // Rule 1: completion_min_cards
+        $key_val     = 'completion_min_cards' . $suffix;
+        $key_enabled = 'completion_min_cards_enabled' . $suffix;
+
+        if (!empty($default_values[$key_val])) {
+            $default_values[$key_enabled] = 1;
         } else {
-            $default_values[$completion_min_cards_enabled] = $default_values[$completion_min_cards] > 0 ? 1 : 0;
+            $default_values[$key_val]     = 10; // Sensible default shown in the field.
+            $default_values[$key_enabled] = 0;
         }
-        
-        $completion_min_mastered = 'completion_min_mastered' . $suffix;
-        $completion_min_mastered_enabled = 'completion_min_mastered_enabled' . $suffix;
-        if (empty($default_values[$completion_min_mastered])) {
-            $default_values[$completion_min_mastered] = 0;
-            $default_values[$completion_min_mastered_enabled] = 0;
+
+        // Rule 2: completion_min_mastered
+        $key_val2     = 'completion_min_mastered' . $suffix;
+        $key_enabled2 = 'completion_min_mastered_enabled' . $suffix;
+
+        if (!empty($default_values[$key_val2])) {
+            $default_values[$key_enabled2] = 1;
         } else {
-            $default_values[$completion_min_mastered_enabled] = $default_values[$completion_min_mastered] > 0 ? 1 : 0;
+            $default_values[$key_val2]     = 0;
+            $default_values[$key_enabled2] = 0;
         }
-        
-        $completion_all_mastered = 'completion_all_mastered' . $suffix;
-        if (!isset($default_values[$completion_all_mastered])) {
-            $default_values[$completion_all_mastered] = 0;
+
+        // Rule 3: completion_all_mastered — nothing special needed; the
+        // checkbox value comes straight from the DB field.
+        if (!isset($default_values['completion_all_mastered' . $suffix])) {
+            $default_values['completion_all_mastered' . $suffix] = 0;
         }
     }
 
+    /**
+     * Post-process form data before it is saved to the database.
+     *
+     * If the "enabled" checkbox for a numeric rule is unticked, we must
+     * write 0 to the DB so the rule is truly disabled — otherwise a
+     * leftover non-zero value would silently re-activate it.
+     *
+     * @param stdClass $data Form data object (modified in place).
+     */
     public function data_postprocessing($data) {
         parent::data_postprocessing($data);
-        $suffix = method_exists($this, 'get_suffix') ? $this->get_suffix() : '';
-        
-        if (!empty($data->completionunlocked)) {
-            $completion = $data->{'completion' . $suffix} ?? 0;
-            $autocompletion = !empty($completion) && $completion == COMPLETION_TRACKING_AUTOMATIC;
-            
-            if (empty($data->{'completion_min_cards_enabled' . $suffix}) || !$autocompletion) {
-                $data->{'completion_min_cards' . $suffix} = 0;
-            }
-            if (empty($data->{'completion_min_mastered_enabled' . $suffix}) || !$autocompletion) {
-                $data->{'completion_min_mastered' . $suffix} = 0;
-            }
-            if (!$autocompletion) {
-                $data->{'completion_all_mastered' . $suffix} = 0;
-            }
+        $suffix = $this->get_suffix();
+
+        // Only touch completion fields when the completion lock is open
+        // (completionunlocked is set by Moodle when the admin explicitly
+        // edits the completion settings).
+        if (empty($data->completionunlocked)) {
+            return;
         }
+
+        $autocompletion = isset($data->{'completion' . $suffix})
+                          && (int)$data->{'completion' . $suffix} === COMPLETION_TRACKING_AUTOMATIC;
+
+        // If not using automatic completion at all, zero out all our fields.
+        if (!$autocompletion) {
+            $data->{'completion_min_cards' . $suffix}    = 0;
+            $data->{'completion_min_mastered' . $suffix} = 0;
+            $data->{'completion_all_mastered' . $suffix} = 0;
+            return;
+        }
+
+        // Rule 1: if the checkbox is off, write 0 so the rule is disabled.
+        if (empty($data->{'completion_min_cards_enabled' . $suffix})) {
+            $data->{'completion_min_cards' . $suffix} = 0;
+        }
+
+        // Rule 2: same for min_mastered.
+        if (empty($data->{'completion_min_mastered_enabled' . $suffix})) {
+            $data->{'completion_min_mastered' . $suffix} = 0;
+        }
+
+        // Rule 3: all_mastered is a plain checkbox; no extra processing needed.
     }
 }

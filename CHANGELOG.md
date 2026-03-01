@@ -2,6 +2,16 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.22] - 2026-03-01 (Ultimate Moodle 4.x Completion Fixes)
+
+### Behoben
+- **Activity Completion (Bugfix):** Die Moodle 4.x Kompatibilität wurde grundlegend überarbeitet und stabilisiert:
+  - `lib.php`: Fügt den fehlenden `leitbox_cm_info_static` Callback hinzu. Dieser ist essenziell in Moodle 4, damit Moodle weiß, welche Custom Rules aktuell für eine Instanz aktiviert sind.
+  - `custom_completion.php`: Die Evaluierung greift nun verlässlich auf das von `leitbox_cm_info_static` gefüllte `$cm->customdata` Array zu (anstatt blind die Datenbank abzufragen). Unkonfigurierte Regeln werden nun immer ignoriert.
+  - `mod_form.php`: Komplettes Re-Write der formularseitigen Rule-Verarbeitung (Preprocessing und Postprocessing) für eine fehlerfreie Speicherung aktivierter/deaktivierter Checkboxen via `$this->get_suffix()`.
+
+---
+
 ## [1.4.21] - 2026-03-01 (Moodle 4.x Completion Logic Fixes)
 
 ### Behoben
