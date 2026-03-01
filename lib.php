@@ -178,22 +178,33 @@ function leitbox_get_completion_state($course, $cm, $userid, $type) {
         return $type; // Rules not enabled
     }
 
-    $completed = true;
+    // Initialize flags for each possible condition
+    $req_min_cards = false;
+    $met_min_cards = true;
+    
+    $req_min_mastered = false;
+    $met_min_mastered = true;
 
+    $req_all_mastered = false;
+    $met_all_mastered = true;
+
+    // 1. Min Cards Condition
     if ($leitbox->completion_min_cards) {
+        $req_min_cards = true;
         $sql = "SELECT COUNT(id) AS total_reviews
                   FROM {leitbox_progress}
                  WHERE userid = :userid AND cardid IN (
                      SELECT id FROM {leitbox_cards} WHERE leitboxid = :instanceid
                  )";
         $total_reviews = $DB->get_field_sql($sql, ['userid' => $userid, 'instanceid' => $leitbox->id]);
-
         if ($total_reviews < $leitbox->completion_min_cards) {
-            $completed = false;
+            $met_min_cards = false;
         }
     }
 
+    // 2. Min Mastered Condition
     if ($leitbox->completion_min_mastered) {
+        $req_min_mastered = true;
         $sql_mastered = "SELECT COUNT(*)
                            FROM {leitbox_progress}
                           WHERE userid = :userid 
@@ -202,32 +213,30 @@ function leitbox_get_completion_state($course, $cm, $userid, $type) {
                                 SELECT id FROM {leitbox_cards} WHERE leitboxid = :instanceid
                             )";
         $total_mastered = $DB->get_field_sql($sql_mastered, ['userid' => $userid, 'instanceid' => $leitbox->id]);
-
         if ($total_mastered < $leitbox->completion_min_mastered) {
-            $completed = false;
+            $met_min_mastered = false;
         }
     }
 
+    // 3. All Mastered Condition
     if (!empty($leitbox->completion_all_mastered)) {
-        // Count total cards in this box
+        $req_all_mastered = true;
         $total_cards = $DB->count_records('leitbox_cards', ['leitboxid' => $leitbox->id]);
-        
-        // Count how many of those cards this user has mastered (box 5)
         $sql_mastered = "SELECT COUNT(p.id) 
                            FROM {leitbox_progress} p 
                            JOIN {leitbox_cards} c ON p.cardid = c.id 
                           WHERE c.leitboxid = :instanceid 
                             AND p.userid = :userid 
                             AND p.box_number = 5";
-        $mastered_cards = $DB->count_records_sql($sql_mastered, [
-            'instanceid' => $leitbox->id, 
-            'userid' => $userid
-        ]);
-
+        $mastered_cards = $DB->count_records_sql($sql_mastered, ['instanceid' => $leitbox->id, 'userid' => $userid]);
         if ($total_cards == 0 || $total_cards != $mastered_cards) {
-            $completed = false;
+            $met_all_mastered = false;
         }
     }
+
+    // A condition is only truly completed if ALL required rules are successfully met
+    // If a rule is NOT required, it technically "meets" the criteria (remains true)
+    $completed = $met_min_cards && $met_min_mastered && $met_all_mastered;
 
     return $completed;
 }

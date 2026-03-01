@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.7] - 2026-03-01 (Completion Default Logic Overhaul)
+
+### Behoben
+- **Vorzeitiger Abschluss (Basislogik):** Die interne Logik der Moodle-Abschlussverfolgung in `lib.php` (`leitbox_get_completion_state`) wurde von Grund auf korrigiert. Bisher ging das System optimistisch von `$completed = true` aus und suchte nur nach Fehlern. Dies führte bei neu angelegten Aktivitäten dazu, dass Bedingungen sofort "erfüllt" wurden, bevor der Schüler überhaupt startete. Die Funktion verlangt nun explizite, messbare Erfolge (Echte Datenbankeinträge) pro aktivierter Regel.
+
+---
+
 ## [1.4.6] - 2026-03-01 (Completion Logic & Trigger Hotfix)
 
 ### Behoben
