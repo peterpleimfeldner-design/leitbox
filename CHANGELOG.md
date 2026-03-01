@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.21] - 2026-03-01 (Moodle 4.x Completion Logic Fixes)
+
+### Behoben
+- **Activity Completion (Bugfix):** Deaktivierte Abschlussbedingungen geben jetzt in Moodle 4.x korrekterweise `COMPLETION_INCOMPLETE` anstatt `COMPLETION_COMPLETE` zurück. Dadurch wird verhindert, dass eine neu erstellte Leitbox sofort als "Erledigt" markiert wird, weil deaktivierte Regeln im Hintergrund immer als "Erfüllt" gezählt wurden.
+- **Toter Code:** Die alte, für Moodle 3.x geschriebene Funktion `leitbox_get_completion_state()` wurde restlos aus `lib.php` entfernt, da Moodle 4 diese ignorierte oder zu fehlerhaften Nebeneffekten führte.
+- **Sicherheits-Check in view.php:** Bei der Markierung "Aktivität angezeigt" wird nun ordentlich vorher mit `is_enabled()` abgeprüft. Dadurch wirft Moodle keinen stillen Fehler mehr im Log.
+
+---
+
 ## [1.4.20] - 2026-03-01 (Moodle 4.3+ Checkbox State Fix)
 
 ### Behoben

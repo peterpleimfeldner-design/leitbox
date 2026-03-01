@@ -39,7 +39,7 @@ class custom_completion extends activity_custom_completion {
         
         if ($rule === 'completion_min_cards') {
             if (!$leitbox->completion_min_cards) {
-                return COMPLETION_COMPLETE;
+                return COMPLETION_INCOMPLETE;
             }
             $sql = "SELECT COUNT(DISTINCT cardid) FROM {leitbox_progress} WHERE userid = :userid AND cardid IN (SELECT id FROM {leitbox_cards} WHERE leitboxid = :instanceid)";
             $count = $DB->get_field_sql($sql, ['userid' => $userid, 'instanceid' => $leitbox->id]) ?: 0;
@@ -47,7 +47,7 @@ class custom_completion extends activity_custom_completion {
             
         } else if ($rule === 'completion_min_mastered') {
             if (!$leitbox->completion_min_mastered) {
-                return COMPLETION_COMPLETE;
+                return COMPLETION_INCOMPLETE;
             }
             $sql_mastered = "SELECT COUNT(DISTINCT cardid) FROM {leitbox_progress} WHERE userid = :userid AND box_number = 5 AND cardid IN (SELECT id FROM {leitbox_cards} WHERE leitboxid = :instanceid)";
             $mastered = $DB->get_field_sql($sql_mastered, ['userid' => $userid, 'instanceid' => $leitbox->id]) ?: 0;
@@ -55,7 +55,7 @@ class custom_completion extends activity_custom_completion {
             
         } else if ($rule === 'completion_all_mastered') {
             if (empty($leitbox->completion_all_mastered)) {
-                return COMPLETION_COMPLETE;
+                return COMPLETION_INCOMPLETE;
             }
             $total_cards = $DB->count_records('leitbox_cards', ['leitboxid' => $leitbox->id]);
             $sql_mastered = "SELECT COUNT(DISTINCT p.cardid) FROM {leitbox_progress} p JOIN {leitbox_cards} c ON p.cardid = c.id WHERE c.leitboxid = :instanceid AND p.userid = :userid AND p.box_number = 5";

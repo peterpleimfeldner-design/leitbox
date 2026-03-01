@@ -163,61 +163,7 @@ function leitbox_get_completion_active_rule_descriptions($course, $cm) {
     return $rules;
 }
 
-/**
- * Obtains the automatic completion state for this module based on any custom
- * conditions in the mod_leitbox record.
- *
- * @param stdClass $course Course
- * @param cm_info $cm Course-module
- * @param int $userid User ID
- * @param bool $type Type of comparison (or/and)
- * @return bool True if completed, false if not, $type if conditions not set.
- */
-function leitbox_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
 
-    $leitbox = $DB->get_record('leitbox', ['id' => $cm->instance], '*', MUST_EXIST);
-    
-    // Check if the conditions are set
-    if (!$leitbox->completion_min_cards && !$leitbox->completion_min_mastered && empty($leitbox->completion_all_mastered)) {
-        return $type; // Rules not enabled
-    }
-
-    $met_min_cards = true;
-    $met_min_mastered = true;
-    $met_all_mastered = true;
-
-    // 1. Min Cards Condition
-    if ($leitbox->completion_min_cards) {
-        $sql = "SELECT COUNT(DISTINCT cardid) FROM {leitbox_progress} WHERE userid = :userid AND cardid IN (SELECT id FROM {leitbox_cards} WHERE leitboxid = :instanceid)";
-        $total_reviews = $DB->get_field_sql($sql, ['userid' => $userid, 'instanceid' => $leitbox->id]);
-        if (empty($total_reviews) || $total_reviews < $leitbox->completion_min_cards) {
-            $met_min_cards = false;
-        }
-    }
-
-    // 2. Min Mastered Condition
-    if ($leitbox->completion_min_mastered) {
-        $sql_mastered = "SELECT COUNT(DISTINCT cardid) FROM {leitbox_progress} WHERE userid = :userid AND box_number = 5 AND cardid IN (SELECT id FROM {leitbox_cards} WHERE leitboxid = :instanceid)";
-        $total_mastered = $DB->get_field_sql($sql_mastered, ['userid' => $userid, 'instanceid' => $leitbox->id]);
-        if (empty($total_mastered) || $total_mastered < $leitbox->completion_min_mastered) {
-            $met_min_mastered = false;
-        }
-    }
-
-    // 3. All Mastered Condition
-    if (!empty($leitbox->completion_all_mastered)) {
-        $total_cards = $DB->count_records('leitbox_cards', ['leitboxid' => $leitbox->id]);
-        $sql_mastered = "SELECT COUNT(DISTINCT p.cardid) FROM {leitbox_progress} p JOIN {leitbox_cards} c ON p.cardid = c.id WHERE c.leitboxid = :instanceid AND p.userid = :userid AND p.box_number = 5";
-        $mastered_cards = $DB->get_field_sql($sql_mastered, ['instanceid' => $leitbox->id, 'userid' => $userid]);
-        if (empty($total_cards) || empty($mastered_cards) || $total_cards != $mastered_cards) {
-            $met_all_mastered = false;
-        }
-    }
-
-    $completed = $met_min_cards && $met_min_mastered && $met_all_mastered;
-    return $completed ? true : false;
-}
 
 /**
  * Extends the settings navigation for the leitbox module.
