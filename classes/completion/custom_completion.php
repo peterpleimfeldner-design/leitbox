@@ -77,21 +77,17 @@ class custom_completion extends activity_custom_completion {
         // Validate that this is a known rule — Moodle best practice.
         $this->validate_rule($rule);
 
-        $userid     = $this->userid;
-        $cm         = $this->cm;
+        $userid      = $this->userid;
+        $cm          = $this->cm;
+        $instanceid  = $cm->instance;
         $customrules = $cm->customdata['customcompletionrules'] ?? [];
 
-        // Load the leitbox record to read the configured thresholds.
-        $leitbox = $DB->get_record('leitbox', ['id' => $cm->instance],
-            'id, completion_min_cards, completion_min_mastered, completion_all_mastered',
-            MUST_EXIST);
-
         if ($rule === 'completion_min_cards') {
-            // Rule not active for this instance — should not be called, but
-            // return INCOMPLETE as a safe default (not COMPLETE).
-            if (empty($customrules['completion_min_cards']) || !$leitbox->completion_min_cards) {
+            if (empty($customrules['completion_min_cards'])) {
                 return COMPLETION_INCOMPLETE;
             }
+            
+            $target = (int)$customrules['completion_min_cards'];
             $sql = "SELECT COUNT(DISTINCT cardid)
                       FROM {leitbox_progress}
                      WHERE userid = :userid
@@ -100,17 +96,17 @@ class custom_completion extends activity_custom_completion {
                        )";
             $count = (int)($DB->get_field_sql($sql, [
                 'userid'     => $userid,
-                'instanceid' => $leitbox->id,
+                'instanceid' => $instanceid,
             ]) ?? 0);
-            return ($count >= (int)$leitbox->completion_min_cards)
-                ? COMPLETION_COMPLETE
-                : COMPLETION_INCOMPLETE;
+            return ($count >= $target) ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
         }
 
         if ($rule === 'completion_min_mastered') {
-            if (empty($customrules['completion_min_mastered']) || !$leitbox->completion_min_mastered) {
+            if (empty($customrules['completion_min_mastered'])) {
                 return COMPLETION_INCOMPLETE;
             }
+            
+            $target = (int)$customrules['completion_min_mastered'];
             $sql = "SELECT COUNT(DISTINCT cardid)
                       FROM {leitbox_progress}
                      WHERE userid     = :userid
@@ -120,22 +116,21 @@ class custom_completion extends activity_custom_completion {
                        )";
             $mastered = (int)($DB->get_field_sql($sql, [
                 'userid'     => $userid,
-                'instanceid' => $leitbox->id,
+                'instanceid' => $instanceid,
             ]) ?? 0);
-            return ($mastered >= (int)$leitbox->completion_min_mastered)
-                ? COMPLETION_COMPLETE
-                : COMPLETION_INCOMPLETE;
+            return ($mastered >= $target) ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
         }
 
         if ($rule === 'completion_all_mastered') {
-            if (empty($customrules['completion_all_mastered']) || empty($leitbox->completion_all_mastered)) {
+            if (empty($customrules['completion_all_mastered'])) {
                 return COMPLETION_INCOMPLETE;
             }
-            $total = (int)$DB->count_records('leitbox_cards', ['leitboxid' => $leitbox->id]);
+            
+            $total = (int)$DB->count_records('leitbox_cards', ['leitboxid' => $instanceid]);
             if ($total === 0) {
-                // No cards exist — cannot be mastered.
-                return COMPLETION_INCOMPLETE;
+                return COMPLETION_INCOMPLETE; // No cards exist yet.
             }
+            
             $sql = "SELECT COUNT(DISTINCT p.cardid)
                       FROM {leitbox_progress} p
                       JOIN {leitbox_cards} c ON p.cardid = c.id
@@ -143,12 +138,10 @@ class custom_completion extends activity_custom_completion {
                        AND p.userid    = :userid
                        AND p.box_number = 5";
             $mastered = (int)($DB->get_field_sql($sql, [
-                'instanceid' => $leitbox->id,
+                'instanceid' => $instanceid,
                 'userid'     => $userid,
             ]) ?? 0);
-            return ($mastered === $total)
-                ? COMPLETION_COMPLETE
-                : COMPLETION_INCOMPLETE;
+            return ($mastered === $total) ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
         }
 
         // Unknown rule — fail safe.

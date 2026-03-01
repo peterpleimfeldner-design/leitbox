@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.4.24] - 2026-03-01 (Moodle 4.x Completion Logic Cleanup)
+
+### Optimiert
+- **Activity Completion (Cleanup):** Refactoring von `custom_completion.php`. Die `get_state()` Funktion nutzt nun exklusiv das `customdata` Array, welches in `lib.php` befüllt wird. Redundante Datenbankabfragen auf die `leitbox`-Tabelle wurden entfernt, was die Ausführungsgeschwindigkeit der Completion Evaluierung drastisch verbessert. Deaktivierte Regeln werden nun blitzschnell und direkt als `INCOMPLETE` gewertet.
+
+---
+
 ## [1.4.23] - 2026-03-01 (Moodle 4.x Completion State Fix)
 
 ### Behoben
