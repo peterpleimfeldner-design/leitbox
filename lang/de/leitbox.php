@@ -33,6 +33,10 @@ $string['completion_min_cards'] = 'Mindestanzahl richtig beantworteter Karten';
 $string['completion_min_cards_desc'] = 'Lernende müssen mindestens so viele Karten mindestens einmal richtig beantworten:';
 $string['completion_min_cards_help'] = 'Eine Karte gilt als "richtig beantwortet" sobald sie mindestens einmal grün bewertet wurde und sich in Box 1 oder höher befindet. Karten die nur rot oder gelb bewertet wurden zählen nicht.';
 
+$string['completion_min_correct'] = 'Karten mindestens einmal richtig beantwortet';
+$string['completion_min_correct_desc'] = 'Lernende müssen mindestens so viele Karten mindestens einmal richtig beantworten:';
+$string['completion_min_correct_help'] = 'Jede Karte zählt nur einmal – nämlich beim ersten Mal, wenn sie richtig beantwortet wird. Dieser Wert darf die Gesamtanzahl der Karten in der Aktivität nicht überschreiten, da jede Karte höchstens einmal gezählt werden kann.';
+
 $string['completion_min_mastered'] = 'Gelernte Karten (Box 5)';
 $string['completion_min_mastered_desc'] = 'Mindestanzahl an Karten, die die letzte Box (Gelernt) erreichen müssen:';
 $string['completion_min_mastered_help'] = 'Gibt an, wie viele Karten Lernende in die letzte Box (Experten-Stapel) befördern müssen. Wichtig: Dieser Wert darf die Gesamtzahl der Karten in der Aktivität nicht überschreiten – andernfalls ist der Abschluss unerreichbar.';
