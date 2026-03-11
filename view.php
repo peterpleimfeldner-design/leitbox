@@ -59,6 +59,15 @@ $vuestrings = [
 ];
 $PAGE->requires->strings_for_js($vuestrings, 'mod_leitbox');
 
+// Fire the course_module_viewed event (required for Moodle activity logging).
+$event = \mod_leitbox\event\course_module_viewed::create([
+    'objectid' => $leitbox->id,
+    'context'  => $context,
+]);
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot('leitbox', $leitbox);
+$event->trigger();
+
 // Update completion state for 'view' condition.
 require_once($CFG->libdir . '/completionlib.php');
 $completion = new \completion_info($course);
@@ -93,7 +102,7 @@ if (file_exists(__DIR__ . '/dist/assets/index.js')) {
     $jsurl = new \moodle_url('/mod/leitbox/dist/assets/index.js', ['v' => $jsmtime]);
     echo '<script type="module" crossorigin src="' . $jsurl->out() . '"></script>';
 } else {
-    echo \html_writer::tag('p', 'Warning: Vue frontend bundle not found. Please run npm build.', ['class' => 'alert alert-warning mt-3']);
+    echo \html_writer::tag('p', get_string('frontendnotfound', 'mod_leitbox'), ['class' => 'alert alert-warning mt-3']);
 }
 
 if (file_exists(__DIR__ . '/dist/assets/index.css')) {
