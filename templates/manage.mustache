@@ -1,0 +1,199 @@
+{{!
+    @template mod_leitbox/manage
+
+    Template for the LeitBox manage cards page.
+    Renders the add/edit card form, the AI bulk import section,
+    and the existing cards table with pagination.
+
+    @package    mod_leitbox
+    @copyright  2026 Peter Pleimfeldner
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+    Example context (json):
+    {
+        "cmid": 42,
+        "sesskey": "abc123",
+        "backurl": "/mod/leitbox/view.php?id=42",
+        "managebaseurl": "/mod/leitbox/manage.php",
+        "strdidacticnotice": "<strong>Tip:</strong> Max 200 cards.",
+        "strbacktoactivity": "Back to activity",
+        "straddsinglecard": "Add single card",
+        "streditsinglecard": "Edit card",
+        "strquestion": "Question",
+        "stranswer": "Answer",
+        "strhint": "Hint",
+        "stroptional": "optional",
+        "straddcard": "Save Card",
+        "strupdatecard": "Save changes",
+        "strcancel": "Cancel",
+        "strbulkimport": "Bulk Import",
+        "strbulkimportdesc": "Paste a formatted text block.",
+        "strprompttypesel": "Select a learning method:",
+        "strpromptinstruct": "Copy this prompt:",
+        "strimportcards": "Import Cards",
+        "strimportph": "===CARD===\nQ: Question\nA: Answer",
+        "strexistingcards": "Existing cards",
+        "strnocards": "No cards found.",
+        "strquestioncol": "Question",
+        "stranswercol": "Answer",
+        "strhintcol": "Hint",
+        "stractionscol": "Actions",
+        "strdeleteselected": "Delete selected",
+        "strexportcards": "Export cards (.txt)",
+        "strselectall": "Select all",
+        "isedit": false,
+        "editcardid": 0,
+        "qval": "",
+        "aval": "",
+        "hval": "",
+        "prompttypes": [{"key":"standard","label":"Standard","selected":1}],
+        "initialprompt": "Create flashcards...",
+        "hascards": true,
+        "cards": [{"id":1,"rownum":1,"question":"Q1","answer":"A1","hint":"","editurl":"#","delurl":"#","editiconhtml":"<i>edit</i>","deleteiconhtml":"<i>del</i>"}],
+        "pagingbartop": "",
+        "pagingbarbottom": "",
+        "exporturl": "#"
+    }
+}}
+<div class="mod-leitbox-manage">
+
+    {{! Back to activity button }}
+    <a href="{{backurl}}" class="btn btn-secondary mb-4">{{strbacktoactivity}}</a>
+
+    {{! ========== 1. ADD / EDIT SINGLE CARD FORM ========== }}
+    <div class="generalbox boxwidthwide boxaligncenter">
+        {{#isedit}}
+        <h3>{{streditsinglecard}}</h3>
+        {{/isedit}}
+        {{^isedit}}
+        <h3>{{straddsinglecard}}</h3>
+        {{/isedit}}
+
+        <form action="{{managebaseurl}}" method="post" class="mform">
+            <input type="hidden" name="id"      value="{{cmid}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+            {{#isedit}}
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="cardid" value="{{editcardid}}">
+            {{/isedit}}
+            {{^isedit}}
+            <input type="hidden" name="action" value="add">
+            {{/isedit}}
+
+            <div class="mb-3">
+                <label>{{strquestion}}</label><br>
+                <textarea name="question" rows="2" class="form-control w-100" required>{{qval}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label>{{stranswer}}</label><br>
+                <textarea name="answer" rows="2" class="form-control w-100" required>{{aval}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label>{{strhint}} ({{stroptional}})</label><br>
+                <textarea name="hint" rows="1" class="form-control w-100">{{hval}}</textarea>
+            </div>
+
+            {{#isedit}}
+            <input type="submit" value="{{strupdatecard}}" class="btn btn-primary">
+            <a href="{{managebaseurl}}?id={{cmid}}" class="btn btn-secondary" style="margin-left:10px;">{{strcancel}}</a>
+            {{/isedit}}
+            {{^isedit}}
+            <input type="submit" value="{{straddcard}}" class="btn btn-primary">
+            {{/isedit}}
+        </form>
+    </div>
+
+    {{! ========== 2. AI BULK IMPORT FORM ========== }}
+    <div class="generalbox boxwidthwide boxaligncenter mt-4">
+        <h3>{{strbulkimport}}</h3>
+        <p>{{strbulkimportdesc}}</p>
+
+        <div class="mb-2">
+            <strong>{{strprompttypesel}}</strong><br>
+            <select id="leitbox-prompt-selector" class="custom-select form-control mb-3 mt-1 w-100">
+                {{#prompttypes}}
+                <option value="{{key}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                {{/prompttypes}}
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <strong>{{strpromptinstruct}}</strong><br>
+            <pre id="leitbox-prompt-display"
+                 class="bg-light p-3 border rounded"
+                 style="white-space: pre-wrap; font-size: 0.9em;">{{initialprompt}}</pre>
+        </div>
+
+        <form action="{{managebaseurl}}" method="post" class="mform">
+            <input type="hidden" name="id"      value="{{cmid}}">
+            <input type="hidden" name="action"  value="import">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+            <div class="mb-3">
+                <textarea name="importdata" rows="10" class="form-control w-100"
+                          placeholder="{{strimportph}}"></textarea>
+            </div>
+
+            <input type="submit" value="{{strimportcards}}" class="btn btn-success">
+        </form>
+    </div>
+
+    {{! ========== 3. EXISTING CARDS TABLE ========== }}
+    <h3 class="mt-5">{{strexistingcards}}</h3>
+
+    {{#hascards}}
+    {{{pagingbartop}}}
+
+    <form action="{{managebaseurl}}" method="post" id="leitbox-bulkdelete-form">
+        <input type="hidden" name="id"      value="{{cmid}}">
+        <input type="hidden" name="action"  value="bulkdelete">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+        <table class="generaltable w-100">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="leitbox-selectall" title="{{strselectall}}"></th>
+                    <th>#</th>
+                    <th>{{strquestioncol}}</th>
+                    <th>{{stranswercol}}</th>
+                    <th>{{strhintcol}}</th>
+                    <th>{{stractionscol}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#cards}}
+                <tr>
+                    <td><input type="checkbox" name="cardids[]" value="{{id}}" class="leitbox-cardcheckbox"></td>
+                    <td>{{rownum}}</td>
+                    <td>{{{question}}}</td>
+                    <td>{{{answer}}}</td>
+                    <td>{{{hint}}}</td>
+                    <td>
+                        <a href="{{editurl}}" style="margin-right:8px;">{{{editiconhtml}}}</a>
+                        <a href="{{delurl}}" class="leitbox-delete-card">{{{deleteiconhtml}}}</a>
+                    </td>
+                </tr>
+                {{/cards}}
+            </tbody>
+        </table>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-danger">{{strdeleteselected}}</button>
+        </div>
+    </form>
+
+    {{{pagingbarbottom}}}
+
+    <div class="mt-5 text-right">
+        <a href="{{exporturl}}" class="btn btn-outline-secondary">{{strexportcards}}</a>
+    </div>
+    {{/hascards}}
+
+    {{^hascards}}
+    <p>{{strnocards}}</p>
+    {{/hascards}}
+
+</div>

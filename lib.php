@@ -124,10 +124,10 @@ function leitbox_get_coursemodule_info($coursemodule) {
     $result = new cached_cm_info();
     $result->name = $leitbox->name;
 
-    // Nur AKTIVE Regeln (Wert > 0) und nur bei automatic completion in customdata schreiben.
-    // Moodle wertet get_state() für JEDE Regel in customcompletionrules aus und erwartet
-    // dass ALLE COMPLETE sind. Deaktivierte Regeln (Wert = 0) dürfen daher NICHT
-    // im Array stehen – sonst blockieren sie die Completion dauerhaft.
+    // Only write ACTIVE rules (value > 0) to customdata for automatic completion.
+    // Moodle evaluates get_state() for EVERY rule in customcompletionrules and expects
+    // ALL to return COMPLETE. Inactive rules (value = 0) must NOT be in the array –
+    // otherwise they permanently block completion.
     if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
         if (!empty($leitbox->completion_min_cards)) {
             $result->customdata['customcompletionrules']['completion_min_cards'] =

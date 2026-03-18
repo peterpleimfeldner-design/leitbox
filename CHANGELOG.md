@@ -14,6 +14,56 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokument
 
 ---
 
+## [1.5.9] - 2026-03-18 (Backup File Naming Intermediate)
+
+### Behoben
+- Vorbereitende Version für Backup-Fix
+
+---
+
+## [1.5.8] - 2026-03-11 (Delete-Dialog & Leafr-Backup Fixes)
+
+### Behoben
+- **Lösch-Bestätigungsdialog flackerte:** `Notification.confirm` (Moodle asynchrones Modal) wurde durch `window.confirm()` ersetzt. Das native Browser-Dialogfenster ist synchron und blockierend — es bleibt geöffnet bis der Nutzer explizit bestätigt oder abbricht, unabhängig vom Moodle-Modal-Stack. Die Abhängigkeit auf `core/notification` im AMD-Modul wurde entfernt.
+- **Leafr Backup Fatal Error (Folgefix):** Das Leafr-ZIP wurde mit der bereits in v1.0.8 korrigierten `backup_leafr_activity_task.class.php` (Typ-Hint-Entfernung) und einer erhöhten Versionsnummer (1.0.9) neu gepackt, sodass Moodle das Update korrekt erkennt und installiert.
+
+---
+
+## [1.5.7] - 2026-03-11 (Post-Test Bugfixes & Expert Review)
+
+### Behoben
+- **AMD Build-Datei fehlte:** `amd/build/manage.min.js` wurde neu erstellt. Moodle Production-Mode serviert ausschließlich Dateien aus `amd/build/` — ohne diese Datei lud das AMD-Modul `mod_leitbox/manage` lautlos nicht, wodurch weder der AI-Prompt-Selector noch die Lösch-Bestätigungsdialoge funktionierten.
+- **AMD Defensive Guard:** In `amd/src/manage.js` wurde ein Null-Guard für `params` und `params.prompts` hinzugefügt. Verhindert `TypeError` falls das AMD-Modul ohne korrekte Parameter aufgerufen wird.
+- **AMD Sofort-Initialisierung:** Der Prompt-`<pre>`-Block synchronisiert sich nun beim Laden der Seite sofort mit der aktuell ausgewählten Option im Dropdown.
+- **Mustache Boolean-Typ:** In `manage.php` wurde `'selected' => 1` (Integer) auf `'selected' => true` (nativer PHP-Boolean) für den Mustache-Section-Wert geändert. Entspricht Moodle Coding Standards und besteht `moodle-plugin-ci mustachelint`.
+
+### Geprüft (kein Handlungsbedarf)
+- Vollständiger Moodle-Experten-Review aller in v1.5.6 geänderten Dateien durchgeführt. Alle Implementierungen (Event-System, PARAM-Typen, Output-API, Backup-Struktur, Mustache-Template, CI-Workflow) wurden als korrekt bestätigt.
+
+---
+
+## [1.5.6] - 2026-03-11 (Moodle Plugin Directory: Compliance Fixes)
+
+### Behoben
+- **Issue #9 – Hard-coded language strings:** Alle direkt eingebetteten, benutzersichtbaren Strings in `manage.php` und `view.php` wurden entfernt und durch `get_string()`-Aufrufe ersetzt. Fehlende String-Keys (`import_placeholder`, `frontendnotfound`) wurden in `lang/en/leitbox.php` und `lang/de/leitbox.php` ergänzt.
+- **Issue #8 – thirdpartylibs.xml fehlend:** Neue Datei `thirdpartylibs.xml` im Plugin-Root erstellt. Dokumentiert Vue.js 3.5.29 (MIT-Lizenz), das als kompiliertes Bundle in `dist/assets/` gebündelt ist.
+- **Issue #7 – Non-English comments:** Alle deutschen Code-Kommentare in `lib.php` und `classes/completion/custom_completion.php` ins Englische übersetzt. Inhalt und Bedeutung unverändert.
+- **Issue #6 – Templates, Output API, AMD JavaScript Modules:** `manage.php` vollständig auf Moodle Output-API umgestellt. HTML wurde in ein neues Mustache-Template ausgelagert (`templates/manage.mustache`). Interaktionen (Lösch-Bestätigungen, Bulk-Select, Prompt-Selektor) wurden in ein neues AMD-Modul ausgelagert (`amd/src/manage.js`). Alle Funktionen wurden 1:1 erhalten.
+- **Issue #5 – Missing Required Events:** Neue Event-Klasse `classes/event/course_module_viewed.php` erstellt. `view.php` feuert das Event nun korrekt bei jedem Aktivitätsaufruf. Die Aktivität wird damit in Moodles Aktivitätslog korrekt erfasst.
+- **Issue #4 – PARAM_RAW Security Risk:** In `manage.php` wurden die Parameter `question`, `answer` und `hint` von `PARAM_RAW` auf `PARAM_CLEANHTML` umgestellt. Der `importdata`-Parameter behält `PARAM_RAW`, da er rohen, vom Import-Parser verarbeiteten Text enthält.
+- **Issue #3 – Backup/Restore:** Alle 4 Backup-Dateien wurden überprüft und sind korrekt implementiert. `FEATURE_BACKUP_MOODLE2` ist in `leitbox_supports()` gesetzt. Kein Handlungsbedarf.
+- **Issue #2 – Incorrect repository name:** Repository auf GitHub umbenannt: `leitbox` → `moodle-mod_leitbox`. Entspricht dem empfohlenen Moodle-Namensschema `moodle-{plugintype}_{pluginname}`.
+- **Issue #1 – GitHub Actions CI/CD:** Neuer Workflow `.github/workflows/ci.yml` mit `moodlehq/moodle-plugin-ci` für automatisierte Tests auf Moodle 4.1–4.5 und PHP 8.1–8.3 erstellt.
+
+### Hinzugefügt
+- `thirdpartylibs.xml` (neu)
+- `classes/event/course_module_viewed.php` (neu)
+- `templates/manage.mustache` (neu)
+- `amd/src/manage.js` (neu)
+- `.github/workflows/ci.yml` (neu)
+
+---
+
 ## [1.5.5] - 2026-03-01 (Mehrsprachige Demo-Karten)
 
 ### Behoben
